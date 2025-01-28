@@ -9,7 +9,7 @@ import Expenses from './Components/Expenses'
 import './index.css'
 import Savings from './Components/Savings'
 import Incomes from './Components/Incomes'
-import Settings from './Components/Settings'
+import SettingsC from './Components/SettingsC'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="expenses" element={<Expenses/>}/>
         <Route path="savings" element={<Savings/>}/>
         <Route path="incomes" element={<Incomes/>}/>
-        <Route path="settings" element={<Settings/>}/>
+        <Route path="settings" element={<SettingsC/>}/>
       </Route>
 
 

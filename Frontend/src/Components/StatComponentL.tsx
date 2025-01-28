@@ -16,7 +16,7 @@ export default function StatCompnentListL({amount, color, description }: StatCom
     return (
         <div className="flex flex-col p-5 bg-white  shadow-gray shadow-md rounded-2xl">
             <span className="text-2xl font-bold">{description}</span>
-            <span className={`${amountColor[color]}`}>${amount}</span>
+            <span className={`${amountColor[color]} font-semibold`}>${amount}</span>
         </div>
     )
 }

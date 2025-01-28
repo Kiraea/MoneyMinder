@@ -20,6 +20,8 @@ export default {
           lightpurple3: "#c5c4e8",
           lightpurple4: "#f2f1fa",
           lightpurple5: "#bab7e3",
+          green: "#E0FAEC",
+          red : "#FAE0EE",
           purple: "#B1AFEF",
           purple2: "#51547D",
           purple3: "#65699C",

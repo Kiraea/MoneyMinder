@@ -85,22 +85,22 @@ export default function Expenses(){
             <dialog ref={addExpenseDialog} className="absolute m-auto shadow-gray shadow-lg rounded-lg">
                 <div className="flex flex-col p-5 gap-2 bg-primary-purple3 text-white ">
                     <IoMdCloseCircle className="absolute top-2 right-2 hover:text-primary-bluegray2" onClick={()=>addExpenseDialog.current?.close()}/>
-                    <label> Title </label>
-                    <input className="text-black rounded-xl p-[2px] text-xs" type="text" placeholder="Bought Eggs"/>
-                    <label> Category</label>
+                    <label className="font-medium"> Title </label>
+                    <input className="text-black rounded-xl p-2 text-xs" type="text" placeholder="Bought Eggs"/>
+                    <label className="font-medium"> Category</label>
 
-                    <select className="text-black rounded-xl p-[1px]" >
+                    <select className="text-black rounded-xl p-2 text-xs" >
                         {dummyOptions.map((option)=> {
                             return (<option className="text-black">{option}</option>)
                         })}
                     </select>                    
 
-                    <label> Amount </label>
-                    <input className="text-black rounded-xl p-[1px]" type="text"/>
-                    <label> Date </label>
-                    <input className="text-black rounded-xl p-[1px]" type="date"/>
+                    <label className="font-medium"> Amount </label>
+                    <input className="text-black rounded-xl p-2 text-xs" type="number"/>
+                    <label className="font-medium"> Date </label>
+                    <input className="text-black rounded-xl p-2 text-xs" type="date"/>
                     <div className="w-full flex justify-end">
-                        <button className="bg-primary-purple3 p-[3px] shadow-primary-bluegray2 shadow-sm rounded-lg hover:bg-primary-bluegray" type="submit">Submit</button>
+                        <button className="bg-primary-purple3 p-2 text-xs shadow-primary-bluegray2 shadow-sm rounded-lg hover:bg-primary-bluegray" type="submit">Submit</button>
                     </div>
 
 
@@ -114,11 +114,15 @@ export default function Expenses(){
 
 
 
-            <div className="flex">
+            <div className="flex justify-between">
                 <button className="font-semibold p-2 border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={openDialogBox}>Add Expenses</button>
+                <select className="bg-primary-bluegray rounded-lg text-white text-xs">
+                    <option>Amount</option>
+                    <option>Date</option>
+                    <option>Name</option>
+                </select>
             </div>
                         
-            <div>Transactions</div>
             <table className="">
                 <thead>
                     <tr className="text-left font-medium bg-primary-bluegray text-white">
