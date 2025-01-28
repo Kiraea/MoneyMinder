@@ -1,7 +1,8 @@
 
 type ButtomMProps = {
     text: string,
-    size: "xs" | "sm" | "md" | "lg" | "xl"
+    size: "xs" | "sm" | "md" | "lg" | "xl",
+    customFunction? : () => void;
 }
 
 const buttonSize = {
@@ -12,7 +13,7 @@ const buttonSize = {
     xl: "text-xl", 
 }
 
-export default function ButtonM ({ text, size }: ButtomMProps ){
+export default function ButtonM ({ text, size, customFunction }: ButtomMProps ){
 
 
     
@@ -20,7 +21,8 @@ export default function ButtonM ({ text, size }: ButtomMProps ){
 
     return (
 
-            <div className={`${buttonSize[size]} bg-primary-bluegray rounded-2xl items-center justify-center p-5 text-white text-xl font-semibold`}>
+            <div onClick={customFunction} className={`${buttonSize[size]}  bg-primary-bluegray rounded-2xl items-center justify-center p-2 text-white text-xl font-semibold`}>
+
                 {text}
             </div>
 

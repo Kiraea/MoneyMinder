@@ -10,7 +10,7 @@ function Sidebar(){
 
 
     return (
-        <div className="w-1/5 flex flex-col items-start bg-primary-bluegray2 text-white text-xs ">
+        <div className=" w-1/5 flex flex-col items-start bg-primary-bluegray3 text-white text-xs ">
             <Link to="/home" className="hover:bg-primary-bluegray w-full p-3"><button className='flex gap-2 '><MdDashboard/> Dashboard</button></Link>
             <Link to="/home/savings" className="hover:bg-primary-bluegray w-full p-3"> <button className='flex gap-2 '><FaPiggyBank/>Savings</button></Link>
             <Link to="/home/expenses" className="hover:bg-primary-bluegray w-full p-3"><button className='flex gap-2 '><FaMoneyBill1Wave/>Expenses</button></Link>

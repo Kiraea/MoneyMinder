@@ -6,9 +6,9 @@ import Content from '../Components/Dashboard';
 import Header from '../Components/Header';
 function MainHome() {
     return (
-        <div className='flex min-h-screen flex-col'>
+        <div className='flex min-h-screen flex-col box-border'>
             <Header/>
-            <div className='flex flex-row'>
+            <div className='flex flex-row flex-grow'>
                 <Sidebar/>
                 <Outlet/>
             </div>

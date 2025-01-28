@@ -26,8 +26,11 @@ type PieChartProps = {
                 data: dataValues,
                 backgroundColor:
                 [        
-                        'rgba(54, 235, 129, 1)',  // Lime green
-                        'rgba(102, 102, 255, 1)'  // Light blue
+                        'rgba(189, 187, 228, 1)',  
+                        'rgba(228, 187, 206, 1)',
+                        'rgba(226, 228, 187, 1)',
+                        'rgba(226, 228, 187, 1)',
+
                 ],
             },
         ],

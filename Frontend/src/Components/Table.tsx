@@ -1,5 +1,9 @@
 
+import { FaTrashCan } from "react-icons/fa6";
+import { IoIosArrowDown } from "react-icons/io";
 
+
+import {useState} from 'react'
 type tableProps = {
     columnValues: string[],
     dataValues: {[key: string]: string}[] // for now 
@@ -16,24 +20,60 @@ const colorTable: {true: string, false: string} = {
 
 export default function Table({columnValues, dataValues} : tableProps){
 
-    
+    const [openActions, setOpenActions] = useState<Record<number, boolean>>({})
+
+
+
+
+    const toggleActions = (index: number) => {
+        setOpenActions((prev) => ({
+          ...prev,
+          [index]: !prev[index], // Toggle the specific row's state
+        }));
+      };
+
     return (
         <table>
-            <tr className="bg-primary-bluegray text-white text-left p-5">
-            {columnValues.map((value)=> {
-                return <th>{value}</th>
-            })}   
+            <tr className="bg-primary-bluegray text-white text-left">
+            {columnValues.map((value, index)=> {
+                return <th key={index}>{value}</th>
+
+            })}
+            <th>Actions</th>
             </tr>
 
             {dataValues.map((object, index)=> {
                 let isEven = findEven(index)
                 return (
-                <tr>
+                <tr key={index}>
                     {Object.keys(object).map((key) => (
-                      <td className={`${colorTable[isEven ? "true" : "false"]}`}>{object[key]}</td>
-                    ))}
+                      <td key={key}className={`${colorTable[isEven ? "true" : "false"]}`}>{object[key]}</td>
+                        
+                    ))
+                    }
+                    <td className={`${colorTable[isEven ? "true" : "false"]}`} >
+
+    
+                        <button onClick={()=>toggleActions(index)} className="">
+                            <IoIosArrowDown />
+                        </button>
+                            
+                    <div className={`${openActions[index] ? "block" : "hidden"}`}>
+                        <select>
+                            <option>Update</option>
+                            <option>Delete</option>
+                        </select>
+
+                    </div>
+
+
+
+                    </td>
+
                 </tr>
+
             )})}
+
 
         </table>
     )

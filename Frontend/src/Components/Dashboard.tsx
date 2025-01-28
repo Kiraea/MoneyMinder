@@ -41,7 +41,7 @@ const dataValues = [
 function Dashboard(){
 
     return (
-        <div className="bg-primary-gray w-full flex flex-col  p-5 gap-8">
+        <div className="h-full bg-primary-gray w-full flex flex-col  p-5 gap-8">
             
             <div className="grid grid-cols-3 gap-8">
                 <StatCompnentListL amount={15232} color={"green"} description="Current Balance"/>
@@ -51,7 +51,6 @@ function Dashboard(){
                 <PieChart title={"Expenses Distribution"} labelNames={["Transportation", "Food"]} dataValues={[25000, 30000]}></PieChart>
                 <PieChart title={"Income Distribution"} labelNames={["Transportation", "Food"]} dataValues={[25000, 30000]}></PieChart>
             </div>
-            <Table columnValues={columnValues} dataValues={dataValues} />
         </div>
     )
 }
