@@ -1,7 +1,6 @@
 import ButtonM from "./ButtonM"
 import Table from "./Table";
-import AddExpense from "../Pages/Expenses/AddExpenses";
-import { MouseEventHandler, useEffect, useRef } from "react";
+import { MouseEventHandler, useContext, useEffect, useRef } from "react";
 import { MdDeleteSweep } from "react-icons/md";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaExchangeAlt } from "react-icons/fa";
@@ -9,6 +8,9 @@ import { useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
+import { SettingsContext } from "../Context/SettingsContext";
+
+
 const columnValues =  ["a", "b", "c"]
 const dataValues = [
     {
@@ -55,6 +57,8 @@ const dummyOptions = ["Food", "Lifestyle", "Education", "Games"]
 
 export default function Expenses(){
 
+    const {currency} = useContext(SettingsContext);
+
 
     const [dropdownIsVisible, setDropdownIsVisible] = useState(false);
     const [dropdownPosition, setDropDownPosition ] = useState({top:0, left:0})
@@ -77,6 +81,8 @@ export default function Expenses(){
     }
     console.log(dropdownPosition)
     
+
+
     return (
         <div className="bg-primary-gray w-full flex flex-col p-5 gap-2 ">
 
@@ -139,7 +145,7 @@ export default function Expenses(){
                         <tr key={index} className="odd:bg-gray-100 text-sm">
                             <td>{value.title}</td>
                             <td>{value.category}</td>
-                            <td>{value.amount}</td>
+                            <td>{currency}{value.amount}</td>
                             <td>{value.date}</td>
                             <td className="relative">
                                 <button onClick={handleDropdownClick}><IoMdArrowDropdown/></button>

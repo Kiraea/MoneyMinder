@@ -10,13 +10,17 @@ import './index.css'
 import Savings from './Components/Savings'
 import Incomes from './Components/Incomes'
 import SettingsC from './Components/SettingsC'
+import { SettingsProvider } from './Context/SettingsContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+      <SettingsProvider>
     <BrowserRouter>
     <Routes>
       <Route path="/login" element={<Login/>}/>
       <Route path="/register" element={<Signup/>}/>
+
+
 
 
       <Route path="home" element={<MainHome/>}>
@@ -26,10 +30,12 @@ createRoot(document.getElementById('root')!).render(
         <Route path="incomes" element={<Incomes/>}/>
         <Route path="settings" element={<SettingsC/>}/>
       </Route>
+     
 
 
       <Route path="*" element={<Login/>}/>
     </Routes>
     </BrowserRouter>
+    </SettingsProvider> 
   </StrictMode>,
 )

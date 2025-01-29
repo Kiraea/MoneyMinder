@@ -1,7 +1,8 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut, Pie } from 'react-chartjs-2';
 
-
+import { SettingsContext } from '../Context/SettingsContext';
+import { useContext } from 'react';
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -17,7 +18,7 @@ type PieChartProps = {
 
 
   export default function PieChart({title, labelNames, dataValues}: PieChartProps) {
-
+    const {currency} = useContext(SettingsContext)
     const data = {
         labels: labelNames,
         datasets: [
@@ -41,7 +42,8 @@ type PieChartProps = {
             <h1 className='font-bold'>{title}</h1>
             <div>
                 <Doughnut data={data}
-                options={{maintainAspectRatio: false, responsive: true}}/>
+                options={{maintainAspectRatio: false, responsive: true,
+                }}/>
             </div>
 
 

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { SettingsContext } from '../Context/SettingsContext';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -21,31 +22,11 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Month Expenses',
-    },
-  },
-    scales: {
-        y: {
-            ticks:{
-                stepSize: 20000 
-            }
-        }
-    }
 
-
-};
 
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-export const data = {
+const data = {
   labels,
   datasets: [
     {
@@ -56,10 +37,35 @@ export const data = {
     },
 
   ],
+
 };
 
-export default function LineChart() {
+export default function LineChart() {  
+    const options = {
+    responsive: true,
+    plugins: {
+        legend: {
+        position: 'top' as const,
+        },
+        title: {
+        display: true,
+        text: 'Month Expenses',
+        },
+    },
+        scales: {
+            y: {
+                ticks:{
+                    stepSize: 20000,
+                    callback: function (value){
+                        return `${currency}` + value
+                    }  
+                }
+            }
+        }
 
+
+    };
+    const {currency} = useContext(SettingsContext)
   return (
     <div className='w-full shadow-gray shadow-md rounded-lg'>
         <Line options={options} data={data} />

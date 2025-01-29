@@ -2,7 +2,8 @@ import StatCompnentListL from "./StatComponentL"
 import PieChart from "./PieChart"
 import Table from "./Table"
 import { IoMdArrowDropdown } from "react-icons/io"
-
+import { SettingsContext } from "../Context/SettingsContext"
+import { useContext } from "react"
 
 
 
@@ -53,13 +54,15 @@ const dataValues = [
 ]
 function Dashboard(){
 
+    const {currency} = useContext(SettingsContext);
+
     return (
         <div className="h-full bg-primary-gray w-full flex flex-col  p-5 gap-8">
             
             <div className="grid grid-cols-3 gap-8">
-                <StatCompnentListL amount={15232} color={"green"} description="Current Balance"/>
-                <StatCompnentListL amount={15232} color={"red"} description="Expenses"/>
-                <StatCompnentListL amount={15232} color={"yellow"} description="Income"/>
+                <StatCompnentListL currency={currency}  amount={15232} color={"green"} description="Current Balance"/>
+                <StatCompnentListL currency={currency} amount={15232} color={"red"} description="Expenses"/>
+                <StatCompnentListL currency={currency} amount={15232} color={"yellow"} description="Income"/>
 
                 <PieChart title={"Expenses Distribution"} labelNames={["Transportation", "Food"]} dataValues={[25000, 30000]}></PieChart>
                 <PieChart title={"Income Distribution"} labelNames={["Transportation", "Food"]} dataValues={[25000, 30000]}></PieChart>
@@ -80,7 +83,7 @@ function Dashboard(){
                         <tr key={index} className={` text-sm odd:bg-primary-lightpurple4 `}>
                             <td className="">{value.title}</td>
                             <td  className=" ">{value.category}</td>
-                            <td className="">{value.amount}</td>
+                            <td className="">{currency}{value.amount}</td>
                             <td className="">{value.date}</td>
                             
 
