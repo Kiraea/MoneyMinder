@@ -12,11 +12,21 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "argon2": "^0.41.1",
+    "connect-pg-simple": "^10.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pg-pool": "^3.7.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/pg": "^8.11.11",
+    "@types/pg-pool": "^2.0.6",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
