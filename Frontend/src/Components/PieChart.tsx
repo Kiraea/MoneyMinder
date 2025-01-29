@@ -43,6 +43,7 @@ type PieChartProps = {
             <div>
                 <Doughnut data={data}
                 options={{maintainAspectRatio: false, responsive: true,
+
                 }}/>
             </div>
 
