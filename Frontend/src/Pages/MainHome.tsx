@@ -5,6 +5,7 @@ import Sidebar from '../Components/Sidebar';
 import Content from '../Components/Dashboard';
 import Header from '../Components/Header';
 function MainHome() {
+
     return (
         <div className='flex min-h-screen flex-col box-border'>
             <Header/>
