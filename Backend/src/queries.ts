@@ -31,6 +31,38 @@ const queries = {
         createGithubUserQ:`
             INSERT INTO users (display_name, provider, provider_id ) VALUES ('user', $1, $2) RETURNING *;
         `,
+    },
+    categories: {
+        getCategoriesQ: `
+            SELECT *
+            FROM categories c
+            WHERE user_id = $1
+        `,
+        getCategoriesByIdQ: `
+            SELECT *
+            FROM categories c
+            WHERE user_id = $1 c.id = $2 
+        `,
+        createCategoryQ: `
+            INSERT INTO categories (user_id, name, type) VALUES ($1, $2, $3) RETURNING *
+        `,
+        updateCategoryQ: `
+
+        `,
+        deleteCategoryQ: `
+            DELETE FROM categories c 
+            WHERE user_id = $1 c.id = $2 
+            RETURNING *
+        `,
+
+
+
+
+
+
+
+
+
     }
 
 }

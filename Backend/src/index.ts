@@ -10,7 +10,7 @@ import connectPgSimple from 'connect-pg-simple'
 import './strategies/local-strategy';
 import authRoutes from './routes/auth'
 import userRoutes from './routes/users'
-
+import categoryRoutes from './routes/categories'
 
 
 dotenv.config();
@@ -82,6 +82,7 @@ app.use(passport.session())
 
 app.use('/api/users', userRoutes)
 app.use('/api/auth',  authRoutes)
+app.use('/api/categories',  categoryRoutes)
 
 
 const run = async () => {
@@ -106,7 +107,7 @@ const setupDatabase = async () => {
 
   //await pool.query(`DROP TYPE IF EXISTS provider_enum CASCADE;`);
   //await pool.query(`CREATE TYPE provider_enum AS ENUM('facebook', 'google', 'github');`);
-
+  //await pool.query(`CREATE TYPE category_enum as ENUM('income', 'expenses', 'savings')`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -132,6 +133,15 @@ const setupDatabase = async () => {
     );
 
   `);
+  await pool.query(`
+      CREATE TABLE IF NOT EXISTS categories (
+        id SERIAL PRIMARY KEY,
+        user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+        name VARCHAR(255) NOT NULL,
+        type category_enum NOT NULL,
+        UNIQUE (user_id, name, type)
+      );
+    `)
 
 
 }
