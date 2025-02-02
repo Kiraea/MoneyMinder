@@ -51,7 +51,7 @@ const queries = {
         `,
         deleteCategoryQ: `
             DELETE FROM categories c 
-            WHERE user_id = $1 c.id = $2 
+            WHERE c.user_id = $1 AND c.id = $2 
             RETURNING *
         `,
 

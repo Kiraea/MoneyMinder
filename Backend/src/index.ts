@@ -134,14 +134,26 @@ const setupDatabase = async () => {
 
   `);
   await pool.query(`
-      CREATE TABLE IF NOT EXISTS categories (
-        id SERIAL PRIMARY KEY,
-        user_id uuid REFERENCES users(id) ON DELETE CASCADE,
-        name VARCHAR(255) NOT NULL,
-        type category_enum NOT NULL,
-        UNIQUE (user_id, name, type)
-      );
-    `)
+    CREATE TABLE IF NOT EXISTS categories (
+      id SERIAL PRIMARY KEY,
+      user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+      name VARCHAR(255) NOT NULL,
+      type category_enum NOT NULL,
+      UNIQUE (user_id, name, type)
+    );
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id SERIAL PRIMARY KEY,
+      user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+      description VARCHAR(255) NOT NULL,
+      category_id int REFERENCES categories(id) ON DELETE CASCADE,
+      amount INT NOT NULL,
+      date DATE DEFAULT CURRENT_DATE
+    );
+    
+  `)
 
 
 }

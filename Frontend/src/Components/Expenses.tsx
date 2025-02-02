@@ -9,6 +9,9 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
 import { SettingsContext } from "../Context/SettingsContext";
+import { useAddCategoryBasedOnType, useGetCategoryBasedOnType } from "../Hooks/QueryHooks";
+import { useMutation } from "@tanstack/react-query";
+import { ICategoryType } from "../Types/categoryT";
 
 
 const columnValues =  ["a", "b", "c"]
@@ -57,6 +60,14 @@ const dummyOptions = ["Food", "Lifestyle", "Education", "Games"]
 
 export default function Expenses(){
 
+
+
+
+    const {data: categoryData, isPending: categoryIsPending, isError:  categoryIsError, error: categoryError}= useGetCategoryBasedOnType("expenses")
+
+
+
+
     const {currency} = useContext(SettingsContext);
 
 
@@ -65,11 +76,18 @@ export default function Expenses(){
 
     const addExpenseDialog = useRef<HTMLDialogElement | null>(null)
     const updateExpenseDialog = useRef<HTMLDialogElement | null>(null)
+    
+
+
+
+
 
 
     const openDialogBox = () => {
         addExpenseDialog.current?.showModal()
     }
+
+
 
     const handleDropdownClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
@@ -77,11 +95,18 @@ export default function Expenses(){
         const rect = dropdownElement.getBoundingClientRect();
         setDropDownPosition({top:rect.bottom, left:rect.left})
         setDropdownIsVisible((prev)=> !prev)
-
     }
-    console.log(dropdownPosition)
-    
+   
 
+
+
+
+    if (categoryIsError){
+        return <div>{categoryError.message}</div>
+    }
+    if (categoryIsPending){
+        return <div>...loading</div>
+    }
 
     return (
         <div className="bg-primary-gray w-full flex flex-col p-5 gap-2 ">
@@ -96,8 +121,8 @@ export default function Expenses(){
                     <label className="font-medium"> Category</label>
 
                     <select className="text-black rounded-xl p-2 text-xs" >
-                        {dummyOptions.map((option)=> {
-                            return (<option className="text-black">{option}</option>)
+                        {categoryData.map((option: any)=> {
+                            return (<option className="text-black">{option.name}</option>)
                         })}
                     </select>                    
 
@@ -112,6 +137,8 @@ export default function Expenses(){
 
                 </div>
             </dialog>
+
+
             
             <div className="flex justify-between gap-20">
                 <LineChart/> 
