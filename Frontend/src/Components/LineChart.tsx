@@ -24,23 +24,27 @@ ChartJS.register(
 
 
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+
+
+type LineChartType = {
+  obj: any
+}
+export default function LineChart({obj} : LineChartType) {
 
 const data = {
   labels,
   datasets: [
     {
       label: 'Expenses Amount',
-      data: labels.map(() => faker.number.int({ min: 0, max: 100000 })),
+      data: Object.values(obj),
       backgroundColor: '#bab7e3',
       borderColor: '#bab7e3',
     },
-
   ],
 
 };
-
-export default function LineChart() {  
     const options = {
     responsive: true,
     plugins: {

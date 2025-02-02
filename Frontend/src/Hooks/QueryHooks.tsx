@@ -50,6 +50,29 @@ export const useGetCategoryBasedOnType= (categoryType: ICategoryType) => {
 }
 
 
+export const useGetExpenses= () => {
+    return useQuery({
+        queryKey: ['expenses'],
+        queryFn: (async ()=> {
+            try{
+                let result = await axiosInstance.get(`${import.meta.env.VITE_BASE_URL_LINK}/api/expenses`)
+                if (result.status === 200){
+                    console.log("JUST FINISHED FETCHING")
+                    return result.data.data
+                }
+            }catch(e:unknown){
+                if (e instanceof AxiosError){
+                    console.log(e)
+                    throw e
+                }
+                throw e
+            }
+        })
+    })
+}
+
+
+
 
 type categoryAddMutationVariables = {
     categoryName: string,
@@ -103,12 +126,80 @@ export const deleteCategory = async ({categoryId, categoryType} : categoryDelete
 export const useDeleteCategory= ()=> {
     const queryClient = useQueryClient()
 
-    const {mutateAsync :useDeleteCategoryAsync} = useMutation({
+    const { mutateAsync: useDeleteCategoryAsync } = useMutation({
         mutationFn: deleteCategory,
-        onSuccess: (data, variables) => {queryClient.invalidateQueries({queryKey: ['categories', variables.categoryType]})}
-    })  
+        onSuccess: (data, variables) => {
+          // Manually remove the category from the cache
+
+          // Invalidate to refetch and sync with server
+          queryClient.invalidateQueries({ queryKey: ['categories', variables.categoryType] });
+        },
+      });
     return {useDeleteCategoryAsync}
 }
+
+
+
+
+export const addExpense = async ({description, categoryId, amount , date}: {description: string, categoryId: number, amount: number, date: string } ) => {
+
+    try{
+        let result = await axiosInstance.post(`${import.meta.env.VITE_BASE_URL_LINK}/api/expenses/`, {description: description, categoryId: categoryId, amount:amount, date:date})
+        if (result.status === 200){
+            result.data.data
+        }
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+
+export const useAddExpense = ()=> {
+    const queryClient = useQueryClient()
+
+    const { mutateAsync: useAddExpenseAsync} = useMutation({
+        mutationFn: addExpense,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['expenses'] });
+        },
+      });
+    return {useAddExpenseAsync}
+}
+
+
+export const deleteExpense = async ({expenseId}: {expenseId: number} ) => {
+    try{
+        let result = await axiosInstance.delete(`${import.meta.env.VITE_BASE_URL_LINK}/api/categories/${expenseId}`)
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+// they haveto be in the same types for variables to work cause it depends on thhe params of the actual function
+
+
+export const useDeleteExpense = ()=> {
+    const queryClient = useQueryClient()
+    const { mutateAsync: useDeleteExpenseAsync} = useMutation({
+        mutationFn: deleteExpense,
+        onSuccess: () => {
+
+          queryClient.invalidateQueries({ queryKey: ['expense'] });
+        },
+      });
+    return {useDeleteExpenseAsync}
+}
+
+
+
 
 
 

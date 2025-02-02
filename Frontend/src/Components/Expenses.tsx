@@ -9,9 +9,12 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
 import { SettingsContext } from "../Context/SettingsContext";
-import { useAddCategoryBasedOnType, useGetCategoryBasedOnType } from "../Hooks/QueryHooks";
+import { useAddCategoryBasedOnType, useGetCategoryBasedOnType, useGetExpenses } from "../Hooks/QueryHooks";
 import { useMutation } from "@tanstack/react-query";
 import { ICategoryType } from "../Types/categoryT";
+import { IYear } from "../Types/categoryT";
+import { convertToPerYear } from "../Hooks/monthMoneyPerYear";
+import { convertToCategoryXAmount } from "../Hooks/categoryXAmount";
 
 
 const columnValues =  ["a", "b", "c"]
@@ -55,6 +58,14 @@ const dataValues = [
 
 ]
 
+const yearList = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050];
+const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fullMonthList = [
+    'January', 'February', 'March', 'April', 'May', 'June', 
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+
 
 const dummyOptions = ["Food", "Lifestyle", "Education", "Games"]
 
@@ -66,7 +77,7 @@ export default function Expenses(){
     const {data: categoryData, isPending: categoryIsPending, isError:  categoryIsError, error: categoryError}= useGetCategoryBasedOnType("expenses")
 
 
-
+    const {data: expenseData, isPending: expenseIsPending, isError:  expenseIsError, error: expenseError} = useGetExpenses();
 
     const {currency} = useContext(SettingsContext);
 
@@ -76,17 +87,35 @@ export default function Expenses(){
 
     const addExpenseDialog = useRef<HTMLDialogElement | null>(null)
     const updateExpenseDialog = useRef<HTMLDialogElement | null>(null)
+   
     
+    const [pieSelectMonth  , setPieSelectMonth] = useState("Jan")
+
+
+    const [selectYear, setSelectYear] = useState<IYear>(2024)
+    let objLineChart: any = {}
+    if (expenseData){
+        objLineChart = convertToPerYear({dataList: expenseData, selectYear: selectYear});
+    }
+    let objPieChart: any = {}
+    if (expenseData){
+        objPieChart = convertToCategoryXAmount(categoryData, expenseData, pieSelectMonth, 2024);
+    }
+
+    
+    console.log(objPieChart, "DAKDWOAKDO");
 
 
 
+
+    let categories: string[] = Object.keys(objPieChart) || []
+    let amount: number[] = Object.values(objPieChart) || []
 
 
 
     const openDialogBox = () => {
         addExpenseDialog.current?.showModal()
     }
-
 
 
     const handleDropdownClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -99,12 +128,18 @@ export default function Expenses(){
    
 
 
-
+    
 
     if (categoryIsError){
         return <div>{categoryError.message}</div>
     }
     if (categoryIsPending){
+        return <div>...loading</div>
+    }
+    if (expenseIsError){
+        return <div>{expenseError.message}</div>
+    }
+    if (expenseIsPending){
         return <div>...loading</div>
     }
 
@@ -141,8 +176,31 @@ export default function Expenses(){
 
             
             <div className="flex justify-between gap-20">
-                <LineChart/> 
-                <PieChart title={"Expenses Distribution This Month"} labelNames={["Transportation", "Food"]} dataValues={[25000, 30000]}></PieChart>
+                <div className="flex flex-col flex-1 gap-2">
+                    <div>
+                        <select className="bg-primary-lightpurple rounded-lg" value={selectYear} onChange={(e)=> {setSelectYear(Number(e.target.value) as IYear)}}>
+
+                            {yearList.map((year)=> {
+                                return (<option value={year}>{year}</option>)
+                            })}
+                        </select>
+                    </div>
+
+                    <LineChart obj={objLineChart} /> 
+                </div>
+
+                <div className="flex flex-col flex-1">
+                    <div>
+                        <select className="bg-primary-lightpurple rounded-lg" value={pieSelectMonth} onChange={(e)=> {setPieSelectMonth(e.target.value)}}>
+                            {monthList.map((month, index)=> {
+                                return (<option value={month}>{fullMonthList[index]}</option>)
+                            })}
+                        </select>
+                    </div>
+
+                    
+                    <PieChart title={"Expenses Distribution"} labelNames={categories} dataValues={amount}></PieChart>
+                </div>
             </div>
 
 
@@ -159,7 +217,7 @@ export default function Expenses(){
             <table className="">
                 <thead>
                     <tr className="text-left font-medium bg-primary-bluegray text-white">
-                        <th>Title</th>
+                        <th>Description</th>
                         <th>Category</th>
                         <th>Amount</th>
                         <th>Date</th>
@@ -167,11 +225,11 @@ export default function Expenses(){
                     </tr>
                 </thead>
                 <tbody>
-                    {dataValues.map((value, index)=> {
+                    {expenseData.map((value, index)=> {
                         return (
                         <tr key={index} className="odd:bg-gray-100 text-sm">
-                            <td>{value.title}</td>
-                            <td>{value.category}</td>
+                            <td>{value.description}</td>
+                            <td>{value.category_name}</td>
                             <td>{currency}{value.amount}</td>
                             <td>{value.date}</td>
                             <td className="relative">

@@ -59,7 +59,7 @@ export default function SettingsC(){
         <div className="bg-primary-bluegray3 w-full m-5 rounded-2xl p-5 flex flex-col text-white font-medium gap-5">
 
             <dialog ref={addCategoryDialog} className="absolute m-auto shadow-gray shadow-lg rounded-lg">
-                <div className="flex flex-col p-5 gap-2 bg-primary-purple3 text-white ">
+                <div className="flex flex-col p-5 gap-2 bg-primary-purple3 text-wh-=ite ">
                     <IoMdCloseCircle className="absolute top-2 right-2 hover:text-primary-bluegray2" onClick={()=>addCategoryDialog.current?.close()}/>
                     <label className="font-medium"> Title </label>
                     <input className="text-black rounded-xl p-2 text-xs" type="text" value={categoryName} onChange={(e)=> {setCategoryName(e.target.value)}} placeholder="Lifestyle"/>
