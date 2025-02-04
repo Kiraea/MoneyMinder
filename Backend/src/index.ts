@@ -11,7 +11,7 @@ import './strategies/local-strategy';
 import authRoutes from './routes/auth'
 import userRoutes from './routes/users'
 import categoryRoutes from './routes/categories'
-
+import expensesRoutes from './routes/expenses'
 
 dotenv.config();
 
@@ -83,6 +83,7 @@ app.use(passport.session())
 app.use('/api/users', userRoutes)
 app.use('/api/auth',  authRoutes)
 app.use('/api/categories',  categoryRoutes)
+app.use('/api/expenses', expensesRoutes)
 
 
 const run = async () => {

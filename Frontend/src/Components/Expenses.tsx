@@ -9,12 +9,13 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
 import { SettingsContext } from "../Context/SettingsContext";
-import { useAddCategoryBasedOnType, useGetCategoryBasedOnType, useGetExpenses } from "../Hooks/QueryHooks";
+import { useAddCategoryBasedOnType, useAddExpense, useGetCategoryBasedOnType, useGetExpenses } from "../Hooks/QueryHooks";
 import { useMutation } from "@tanstack/react-query";
 import { ICategoryType } from "../Types/categoryT";
 import { IYear } from "../Types/categoryT";
 import { convertToPerYear } from "../Hooks/monthMoneyPerYear";
 import { convertToCategoryXAmount } from "../Hooks/categoryXAmount";
+import { axiosInstance } from "../axios";
 
 
 const columnValues =  ["a", "b", "c"]
@@ -74,23 +75,29 @@ export default function Expenses(){
 
 
 
+    const { useAddExpenseAsync} = useAddExpense()
     const {data: categoryData, isPending: categoryIsPending, isError:  categoryIsError, error: categoryError}= useGetCategoryBasedOnType("expenses")
-
-
     const {data: expenseData, isPending: expenseIsPending, isError:  expenseIsError, error: expenseError} = useGetExpenses();
-
     const {currency} = useContext(SettingsContext);
-
-
     const [dropdownIsVisible, setDropdownIsVisible] = useState(false);
     const [dropdownPosition, setDropDownPosition ] = useState({top:0, left:0})
-
     const addExpenseDialog = useRef<HTMLDialogElement | null>(null)
     const updateExpenseDialog = useRef<HTMLDialogElement | null>(null)
-   
-    
+        useEffect(() => {
+        if (categoryData && categoryData.length > 0 && !addExpenseInputs.category) {
+            setAddExpenseInputs((prev) => ({ ...prev, category: categoryData[0].id }));
+        }
+    }, [categoryData]);
     const [pieSelectMonth  , setPieSelectMonth] = useState("Jan")
 
+    const [addExpenseInputs, setAddExpenseInputs] = useState(
+        {
+            description: "",
+            category: 0,
+            amount: 0,
+            date: ""
+        }
+    )
 
     const [selectYear, setSelectYear] = useState<IYear>(2024)
     let objLineChart: any = {}
@@ -102,15 +109,8 @@ export default function Expenses(){
         objPieChart = convertToCategoryXAmount(categoryData, expenseData, pieSelectMonth, 2024);
     }
 
-    
-    console.log(objPieChart, "DAKDWOAKDO");
-
-
-
-
     let categories: string[] = Object.keys(objPieChart) || []
     let amount: number[] = Object.values(objPieChart) || []
-
 
 
     const openDialogBox = () => {
@@ -125,9 +125,20 @@ export default function Expenses(){
         setDropDownPosition({top:rect.bottom, left:rect.left})
         setDropdownIsVisible((prev)=> !prev)
     }
-   
 
+    const handleAddExpenseInput = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+        const {name, value} = e.target
+        setAddExpenseInputs((prev)=> ({...prev, [name]: value}))
+    }
 
+    const submitAddExpense = async () => {
+
+        if (addExpenseInputs.amount && addExpenseInputs.category && addExpenseInputs.date && addExpenseInputs.description){
+            useAddExpenseAsync({description: addExpenseInputs.description, categoryId: addExpenseInputs.category, amount: addExpenseInputs.amount, date: addExpenseInputs.date })
+        }else{
+            console.log("fields not complete");
+        }
+    }
     
 
     if (categoryIsError){
@@ -152,21 +163,21 @@ export default function Expenses(){
                 <div className="flex flex-col p-5 gap-2 bg-primary-purple3 text-white ">
                     <IoMdCloseCircle className="absolute top-2 right-2 hover:text-primary-bluegray2" onClick={()=>addExpenseDialog.current?.close()}/>
                     <label className="font-medium"> Title </label>
-                    <input className="text-black rounded-xl p-2 text-xs" type="text" placeholder="Bought Eggs"/>
+                    <input onChange={handleAddExpenseInput} name='description' value={addExpenseInputs.description} className="text-black rounded-xl p-2 text-xs" type="text" placeholder="Bought Eggs"/>
                     <label className="font-medium"> Category</label>
 
-                    <select className="text-black rounded-xl p-2 text-xs" >
+                    <select onChange={handleAddExpenseInput} className="text-black rounded-xl p-2 text-xs" name='category' value={addExpenseInputs.category} >
                         {categoryData.map((option: any)=> {
-                            return (<option className="text-black">{option.name}</option>)
+                            return (<option className="text-black" value={option.id}>{option.name}</option>)
                         })}
                     </select>                    
 
                     <label className="font-medium"> Amount </label>
-                    <input className="text-black rounded-xl p-2 text-xs" type="number"/>
+                    <input onChange={handleAddExpenseInput} name='amount' value={addExpenseInputs.amount} className="text-black rounded-xl p-2 text-xs" type="number"/>
                     <label className="font-medium"> Date </label>
-                    <input className="text-black rounded-xl p-2 text-xs" type="date"/>
+                    <input onChange={handleAddExpenseInput} name='date' value={addExpenseInputs.date} className="text-black rounded-xl p-2 text-xs" type="date"/>
                     <div className="w-full flex justify-end">
-                        <button className="bg-primary-purple3 p-2 text-xs shadow-primary-bluegray2 shadow-sm rounded-lg hover:bg-primary-bluegray" type="submit">Submit</button>
+                        <button onClick={submitAddExpense} className="bg-primary-purple3 p-2 text-xs shadow-primary-bluegray2 shadow-sm rounded-lg hover:bg-primary-bluegray" type="submit">Submit</button>
                     </div>
 
 
