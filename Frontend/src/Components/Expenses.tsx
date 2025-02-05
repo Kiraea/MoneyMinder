@@ -99,7 +99,8 @@ export default function Expenses(){
 
     console.log(expenseData, "ORIGINAL EXPENSE");
     
-    const [pieSelectMonth  , setPieSelectMonth] = useState("Jan")
+    const [pieSelectMonth  , setPieSelectMonth] = useState("Jan");
+    const [pieSelectYear, setPieSelectYear] = useState(2024);
 
     const [addExpenseInputs, setAddExpenseInputs] = useState(
         {
@@ -134,7 +135,7 @@ export default function Expenses(){
     }
     let objPieChart: any = {}
     if (expenseData){
-        objPieChart = convertToCategoryXAmount(categoryData, expenseData, pieSelectMonth, 2024);
+        objPieChart = convertToCategoryXAmount(categoryData, expenseData, pieSelectMonth, pieSelectYear);
     }
 
     let categories: string[] = Object.keys(objPieChart) || []
@@ -276,6 +277,11 @@ export default function Expenses(){
                         <select className="bg-primary-lightpurple rounded-lg" value={pieSelectMonth} onChange={(e)=> {setPieSelectMonth(e.target.value)}}>
                             {monthList.map((month, index)=> {
                                 return (<option value={month}>{fullMonthList[index]}</option>)
+                            })}
+                        </select>
+                        <select className="bg-primary-lightpurple rounded-lg" value={pieSelectYear} onChange={(e)=> {setPieSelectYear(Number(e.target.value))}}>
+                            {yearList.map((year, index)=> {
+                                return (<option value={year}>{year}</option>)
                             })}
                         </select>
                     </div>
