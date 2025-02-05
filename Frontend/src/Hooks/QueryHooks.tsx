@@ -202,7 +202,41 @@ export const useDeleteExpense = ()=> {
     return {useDeleteExpenseAsync}
 }
 
+/*
+{
+    "expenseObj": {
+      "amount": 25.00,
+      "category_id": 2
+    }
+  }
+  {
+    "amount": 25.00,
+    "category_id": 2
+  }
+*/
+const patchExpense = async ({expenseObj, expenseId}: {expenseObj: {[key: string]: any}, expenseId: number}) => {
+    console.log(expenseId, expenseObj, "PATHC EPXENSE EXPENS")
+    try{
+        let result = await axiosInstance.patch(`${import.meta.env.VITE_BASE_URL_LINK}/api/expenses/${expenseId}`, expenseObj) 
+        if(result.status == 200){
+            result.data.data
+        }
+    }catch(e: unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw(e)
+        }
+    }
+}
 
+export const usePatchExpense = () => {
+    const queryClient = useQueryClient()
+    const {mutateAsync: usePatchExpenseAsync} = useMutation({
+        mutationFn: patchExpense,
+        onSuccess: () =>  queryClient.invalidateQueries({queryKey: ["expenses"]})
+    })
+    return {usePatchExpenseAsync}
+}
 
 
 

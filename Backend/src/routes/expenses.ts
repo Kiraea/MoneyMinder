@@ -1,5 +1,5 @@
 import express from 'express'
-import { getExpenses, getExpense, createExpense, deleteExpense, updateExpense} from '../handlers/expenses'
+import { getExpenses, getExpense, createExpense, deleteExpense, patchExpense} from '../handlers/expenses'
 
 const router = express()
 
@@ -10,7 +10,7 @@ router.get('/:expenseId', getExpense)
 
 router.post('/', createExpense)
 
-router.patch('/:expenseId', updateExpense)
+router.patch('/:expenseId', patchExpense)
 
 router.delete('/:expenseId', deleteExpense)
 

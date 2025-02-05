@@ -17,7 +17,8 @@ import { convertToPerYear } from "../Hooks/monthMoneyPerYear";
 import { convertToCategoryXAmount } from "../Hooks/categoryXAmount";
 import { axiosInstance } from "../axios";
 import { sortByOptions } from "../Hooks/Sort";
-
+import { formatDate, reverseFormatDate } from "../Hooks/LongDateToISO";
+import { usePatchExpense } from "../Hooks/QueryHooks";
 
 const columnValues =  ["a", "b", "c"]
 const dataValues = [
@@ -76,7 +77,7 @@ export default function Expenses(){
 
 
 
-    const { useAddExpenseAsync} = useAddExpense()
+    const {useAddExpenseAsync} = useAddExpense()
     const {useDeleteExpenseAsync} = useDeleteExpense() 
     const {data: categoryData, isPending: categoryIsPending, isError:  categoryIsError, error: categoryError}= useGetCategoryBasedOnType("expenses")
     const {data: expenseData, isPending: expenseIsPending, isError:  expenseIsError, error: expenseError} = useGetExpenses();
@@ -85,8 +86,26 @@ export default function Expenses(){
     const [dropdownPosition, setDropDownPosition ] = useState({top:0, left:0})
     const addExpenseDialog = useRef<HTMLDialogElement | null>(null)
     const updateExpenseDialog = useRef<HTMLDialogElement | null>(null)
-    const [selectedExpenseId, setSelectedExpenseId] = useState(-1)
+    const [selectedExpenseId, setSelectedExpenseId] = useState(-1) // for delete
 
+
+    const {usePatchExpenseAsync} = usePatchExpense()
+
+    const [selectedExpense, setSelectedExpense] = useState<Record<string, any>>(
+         {
+            description: "",
+            category_id: 0,
+            amount: 0,
+            date: ""
+        }           
+    )
+
+    const [modifiedExpense, setModifiedExpense] = useState<Record<string, any>>({ // for comparing to the selected expense cause i will use "PATCH"
+            description: "",
+            category_id: 0,
+            amount: 0,
+            date: ""
+    })
     const [sort, setSort] = useState("date")
     const [orderBy, setOrderBy] = useState("ascending")
 
@@ -97,7 +116,6 @@ export default function Expenses(){
     }
     }, [categoryData]);
 
-    console.log(expenseData, "ORIGINAL EXPENSE");
     
     const [pieSelectMonth  , setPieSelectMonth] = useState("Jan");
     const [pieSelectYear, setPieSelectYear] = useState(2024);
@@ -115,18 +133,9 @@ export default function Expenses(){
     if (expenseData && !expenseIsPending){
         sortedData = sortByOptions(expenseData, sort, orderBy);
     }
-    console.log(sortedData);
 
 
-    const [updateExpenseInputs , setUpdateExpenseInputs] = useState(
-        {
-            id: 0,
-            description: "",
-            category: 0,
-            amount: 0,
-            date: ""
-        }
-    )
+
 
     const [selectYear, setSelectYear] = useState<IYear>(2024)
     let objLineChart: any = {}
@@ -146,20 +155,21 @@ export default function Expenses(){
         addExpenseDialog.current?.showModal()
     }
     const openUpdateDialogBox= () => {
-        console.log("OPENUPDATEDIALOG")
+        setDropdownIsVisible(false);
         updateExpenseDialog.current?.showModal()
     }
 
 
-    const handleDropdownClick = (event: React.MouseEvent<HTMLButtonElement>, chosenExpenseId: number) => {
+    const handleDropdownClick = (event: React.MouseEvent<HTMLButtonElement>, chosenExpenseId: number, description: string, category_id:number, amount:number, date: string ) => {
         event.stopPropagation()
         const dropdownElement = event.currentTarget
         const rect = dropdownElement.getBoundingClientRect();
         setDropDownPosition({top:rect.bottom, left:rect.left})
         setDropdownIsVisible((prev)=> !prev)
-        setSelectedExpenseId(chosenExpenseId)
+        setSelectedExpense({description: description, category_id: category_id,amount: amount, date:date})
+        setModifiedExpense({description: description, category_id: category_id,amount: amount, date:date})
+        setSelectedExpenseId(chosenExpenseId);
     }
-    console.log(selectedExpenseId);
 
     const handleAddExpenseInput = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const {name, value} = e.target
@@ -177,18 +187,45 @@ export default function Expenses(){
 
     const handleUpdateExpenseInput = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const {name, value} = e.target
-        setUpdateExpenseInputs((prev)=> ({...prev, [name]: value}))
+        setModifiedExpense((prev)=> ({...prev, [name]: value}))
     }
-    const submitUpdateExpense = async () => {
-        if (updateExpenseInputs.amount && updateExpenseInputs.category && updateExpenseInputs.date && updateExpenseInputs.description){
-            ({description: updateExpenseInputs.description, categoryId: updateExpenseInputs.category, amount: updateExpenseInputs.amount, date: updateExpenseInputs.date })
-        }else{
-            console.log("fields not complete");
+    const submitUpdateExpense = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        let modified: {[key: string]: any} = {};
+        for (const [key, value] of Object.entries(selectedExpense)) {
+            let selectedExpenseSolo = selectedExpense[key]
+            let modifiedExpenseSolo = modifiedExpense[key] 
+            // We doing checks cause objects referrence by value and u have to do this, and some econversion is also needed eg dates
+            if (key === 'category_id' || key === 'amount'){
+                modifiedExpenseSolo = Number(modifiedExpenseSolo)
+                selectedExpenseSolo= Number(selectedExpenseSolo)
+            }
+            
+            if (key === 'date'){
+
+
+
+                modifiedExpenseSolo = formatDate(modifiedExpenseSolo);
+                selectedExpenseSolo = formatDate(selectedExpenseSolo);    
+
+            }
+            
+
+            if (selectedExpenseSolo !== modifiedExpenseSolo){
+                modified[key] = modifiedExpense[key]
+            }
         }
+        if (Object.keys(modified).length === 0){
+            updateExpenseDialog.current?.close()
+        }else{
+            usePatchExpenseAsync({expenseObj: modified, expenseId: selectedExpenseId})
+            updateExpenseDialog.current?.close()
+        }
+
     } 
 
     const handleDeleteExpense = async () => {
         console.log("handle it ");
+        setDropdownIsVisible(false);
         useDeleteExpenseAsync({expenseId: selectedExpenseId})
     }
 
@@ -240,17 +277,17 @@ export default function Expenses(){
                 <div className="flex flex-col p-5 gap-2 bg-primary-purple3 text-white ">
                     <IoMdCloseCircle className="absolute top-2 right-2 hover:text-primary-bluegray2" onClick={()=>updateExpenseDialog.current?.close()}/>
                     <label className="font-medium"> Description </label>
-                    <input onChange={handleUpdateExpenseInput} name='description' value={updateExpenseInputs.description} className="text-black rounded-xl p-2 text-xs" type="text" placeholder="Bought Eggs"/>
+                    <input onChange={handleUpdateExpenseInput} name='description' value={modifiedExpense.description} className="text-black rounded-xl p-2 text-xs" type="text" placeholder="Bought Eggs"/>
                     <label className="font-medium"> Category</label>
-                    <select onChange={handleUpdateExpenseInput} className="text-black rounded-xl p-2 text-xs" name='category' value={updateExpenseInputs.category} >
+                    <select onChange={handleUpdateExpenseInput} className="text-black rounded-xl p-2 text-xs" name='category_id' value={modifiedExpense.category_id} >
                         {categoryData.map((option: any)=> {
                             return (<option className="text-black" value={option.id}>{option.name}</option>)
                         })}
                     </select>                    
                     <label className="font-medium"> Amount </label>
-                    <input onChange={handleUpdateExpenseInput} name='amount' value={updateExpenseInputs.amount} className="text-black rounded-xl p-2 text-xs" type="number"/>
+                    <input onChange={handleUpdateExpenseInput} name='amount' value={modifiedExpense.amount} className="text-black rounded-xl p-2 text-xs" type="number"/>
                     <label className="font-medium"> Date </label>
-                    <input onChange={handleUpdateExpenseInput} name='date' value={updateExpenseInputs.date} className="text-black rounded-xl p-2 text-xs" type="date"/>
+                    <input onChange={handleUpdateExpenseInput} name='date' value={formatDate(modifiedExpense.date)} className="text-black rounded-xl p-2 text-xs" type="date"/>
                     <div className="w-full flex justify-end">
                         <button onClick={submitUpdateExpense} className="bg-primary-purple3 p-2 text-xs shadow-primary-bluegray2 shadow-sm rounded-lg hover:bg-primary-bluegray" type="submit">Submit</button>
                     </div>
@@ -258,8 +295,8 @@ export default function Expenses(){
             </dialog>
 
             
-            <div className="flex justify-between gap-20">
-                <div className="flex flex-col flex-1 gap-2">
+            <div className="flex justify-between gap-5">
+                <div className="flex flex-col flex-1 gap-5">
                     <div>
                         <select className="bg-primary-lightpurple rounded-lg" value={selectYear} onChange={(e)=> {setSelectYear(Number(e.target.value) as IYear)}}>
 
@@ -272,8 +309,8 @@ export default function Expenses(){
                     <LineChart obj={objLineChart} /> 
                 </div>
 
-                <div className="flex flex-col flex-1">
-                    <div>
+                <div className="flex flex-col flex-1 gap-5">
+                    <div className="flex gap-5">
                         <select className="bg-primary-lightpurple rounded-lg" value={pieSelectMonth} onChange={(e)=> {setPieSelectMonth(e.target.value)}}>
                             {monthList.map((month, index)=> {
                                 return (<option value={month}>{fullMonthList[index]}</option>)
@@ -328,7 +365,7 @@ export default function Expenses(){
                             <td>{currency}{value.amount}</td>
                             <td>{value.date}</td>
                             <td className="relative">
-                                <button onClick={(e)=>handleDropdownClick(e, value.id)}><IoMdArrowDropdown/></button>
+                                <button onClick={(e)=>handleDropdownClick(e, value.id, value.description, Number(value.category_id), value.amount, value.date)}><IoMdArrowDropdown/></button>
 
                             </td>
                         </tr>

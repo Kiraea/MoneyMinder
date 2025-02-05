@@ -55,10 +55,63 @@ export const createExpense = async (req: Request, res: Response) => {
     }
 }
 
-export const updateExpense = async (req: Request, res: Response) => {
+export const patchExpense = async (req: Request, res: Response) => {
+    console.log("patchexpense function")
+    const {category_id, amount, date, description} = req.body
+    const {expenseId} = req.params
 
 
+    let values : any = []
+    let conditions : any = []
+    let whereConditions : any = []
+
+    if (category_id){
+        conditions.push(`category_id = $${values.length+1}`)
+        values.push(category_id)
+    }
+    if(amount){
+        conditions.push(`amount = $${values.length+1}`)
+        values.push(amount)
+    }
+    if(date){
+        conditions.push(`date = $${values.length+1}`)
+        values.push(date)
+    }
+    if(description){
+        conditions.push(`description = $${values.length+1}`)
+        values.push(description)
+    }
+
+    whereConditions.push(`id = $${values.length+1}`);
+    values.push(expenseId)
+
+
+    whereConditions.push(`user_id = $${values.length+1}`);
+    values.push(req.user?.id);
     
+    let newQuery: string = `
+        UPDATE expenses
+        SET ${conditions.join(', ')}
+        WHERE ${whereConditions.join(` AND `)}
+        RETURNING *;
+    `
+
+    console.log(newQuery, "NEW QUERY");
+    console.log(values, "values");
+
+
+    try{
+        let result = await pool.query(newQuery, values)
+        if (result.rowCount! > 0){
+            res.status(200).json({status:"success", message: "succesfully created expense"})
+        }else{
+            console.log("NIGP")
+            res.status(200).json({status:"success", message: "did not create expense"})
+        }
+    }catch(e){
+        res.status(500).json({status:"fail", message: "did not create expense"})
+        console.log(e)
+    }
 }
 
 export const deleteExpense = async (req: Request, res: Response) => {

@@ -71,8 +71,7 @@ const queries = {
         createExpenseQ: `
             INSERT INTO expenses (user_id, description, category_id, amount, date) VALUES ($1, $2, $3, $4, $5) RETURNING *
         `,
-        updateExpenseQ: `
-        `,
+
         deleteExpenseQ:`
             DELETE FROM expenses e
             WHERE e.user_id = $1 AND e.id = $2 
