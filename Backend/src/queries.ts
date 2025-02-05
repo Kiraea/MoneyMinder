@@ -57,8 +57,8 @@ const queries = {
     },
     expenses: {
         getExpensesQ: `
-            SELECT e.id, e.user_id, e.description, e.amount, TO_CHAR(e.date, 'Mon DD, YYYY') as date
-            c.name AS category_name
+            SELECT e.id, e.user_id, e.description, e.amount, TO_CHAR(e.date, 'Mon DD, YYYY') as date,
+            c.name AS category_name, c.id AS category_id
             FROM expenses e JOIN categories c
                             ON e.category_id = c.id
             WHERE e.user_id = $1
@@ -72,7 +72,6 @@ const queries = {
             INSERT INTO expenses (user_id, description, category_id, amount, date) VALUES ($1, $2, $3, $4, $5) RETURNING *
         `,
         updateExpenseQ: `
-
         `,
         deleteExpenseQ:`
             DELETE FROM expenses e

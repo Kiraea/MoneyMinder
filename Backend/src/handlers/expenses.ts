@@ -15,9 +15,11 @@ export const getExpenses = async (req: Request, res: Response) => {
     try{
         let result = await pool.query(`
             SELECT e.id, e.user_id, e.description, e.amount, TO_CHAR(e.date, 'Mon DD, YYYY') as date,
-            c.name AS category_name 
+            c.name AS category_name, c.id AS category_id
             FROM expenses e JOIN categories c
-            ON e.category_id = c.id ORDER BY ${finalSort};`)
+            ON e.category_id = c.id 
+            WHERE e.user_id = '${req.user?.id}'
+            ORDER BY ${finalSort};`)
         if (result.rowCount! > 0){
             res.status(200).json({status:"success", message: "succesfully retrieved expenses", data: result.rows})
         }else{
@@ -67,7 +69,7 @@ export const deleteExpense = async (req: Request, res: Response) => {
             if (result.rowCount! > 0){
                 res.status(200).json({status:"success", message: "succesfully deleted expense", data: result.rows})
             }else{
-                res.status(200).json({status:"success", message: "did not delete expense"})
+                res.status(200).json({status:"success", message: "did not delete expense but success"})
             }
     }catch(e){
         res.status(500).json({status:"fail", message: "did not delete expense"})

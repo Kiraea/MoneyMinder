@@ -172,8 +172,13 @@ export const useAddExpense = ()=> {
 
 
 export const deleteExpense = async ({expenseId}: {expenseId: number} ) => {
+    console.log(expenseId + "expenseId");
     try{
-        let result = await axiosInstance.delete(`${import.meta.env.VITE_BASE_URL_LINK}/api/categories/${expenseId}`)
+        let result = await axiosInstance.delete(`${import.meta.env.VITE_BASE_URL_LINK}/api/expenses/${expenseId}`)
+        if(result.status === 200){
+            result.data.message
+            console.log(result.data.message)
+        }
     }catch(e:unknown){
         if (e instanceof AxiosError){
             console.log(e)
@@ -191,8 +196,7 @@ export const useDeleteExpense = ()=> {
     const { mutateAsync: useDeleteExpenseAsync} = useMutation({
         mutationFn: deleteExpense,
         onSuccess: () => {
-
-          queryClient.invalidateQueries({ queryKey: ['expense'] });
+          queryClient.invalidateQueries({ queryKey: ['expenses'] });
         },
       });
     return {useDeleteExpenseAsync}
