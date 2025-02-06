@@ -104,11 +104,21 @@ export {pool}
 const setupDatabase = async () => {
   await pool.query(`SET search_path TO '${process.env.DB_SCHEMA}';`)
 
-  //await pool.query(`DROP TABLE IF EXISTS users;`);
+  /*
+  await pool.query(`DROP TABLE IF EXISTS expenses;`);
+  await pool.query(`DROP TABLE IF EXISTS savings;`);
+  await pool.query(`DROP TABLE IF EXISTS categories;`);
+  await pool.query(`DROP TABLE IF EXISTS users;`);
+  await pool.query(`DROP TABLE IF EXISTS user_sessions;`);
 
-  //await pool.query(`DROP TYPE IF EXISTS provider_enum CASCADE;`);
-  //await pool.query(`CREATE TYPE provider_enum AS ENUM('facebook', 'google', 'github');`);
-  //await pool.query(`CREATE TYPE category_enum as ENUM('income', 'expenses', 'savings')`);
+  await pool.query(`DROP TYPE IF EXISTS category_enum CASCADE;`);
+  await pool.query(`DROP TYPE IF EXISTS provider_enum CASCADE;`);
+
+
+
+  await pool.query(`CREATE TYPE provider_enum AS ENUM('facebook', 'google', 'github');`);
+  await pool.query(`CREATE TYPE category_enum as ENUM('income', 'expenses', 'savings')`);
+  */
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -137,7 +147,7 @@ const setupDatabase = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS categories (
       id SERIAL PRIMARY KEY,
-      user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+      user_id uuid REFERENCES users(id),
       name VARCHAR(255) NOT NULL,
       type category_enum NOT NULL,
       UNIQUE (user_id, name, type)
@@ -147,16 +157,26 @@ const setupDatabase = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS expenses (
       id SERIAL PRIMARY KEY,
-      user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+      user_id uuid REFERENCES users(id),
       description VARCHAR(255) NOT NULL,
-      category_id int REFERENCES categories(id) ON DELETE CASCADE,
+      category_id int REFERENCES categories(id),
       amount INT NOT NULL,
       date DATE DEFAULT CURRENT_DATE
     );
     
   `)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS savings (
+      id SERIAL PRIMARY KEY,
+      user_id uuid REFERENCES users(id),
+      description VARCHAR(255) NOT NULL,
+      category_id int REFERENCES categories(id),
+      amount INT NOT NULL,
+      date DATE DEFAULT CURRENT_DATE
+    ); 
+  `)
 
-
+  
 }
 
 

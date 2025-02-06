@@ -6,6 +6,7 @@ import { SettingsContext } from "../Context/SettingsContext"
 import { useContext } from "react"
 
 
+import { useGetExpenses } from "../Hooks/QueryHooks"
 
 const columnValues =  ["a", "b", "c"]
 const dataValues = [
@@ -52,7 +53,41 @@ const dataValues = [
 
 
 ]
+
+const findTotalAmount= (arrObj) => {
+    let totalExpenses: number = 0
+    if (arrObj && arrObj.length > 0){
+        arrObj.map((expense) => {
+            totalExpenses += expense.amount
+        })
+
+
+        console.log("totalExpenses:", totalExpenses);
+    }
+    return totalExpenses
+}
+
+
+
 function Dashboard(){
+
+
+
+    const {data: expensesData = [], isPending: expensesIsPending, error: expensesError, isError: expenseIsError} = useGetExpenses()
+
+    let totalExpense: number = 0
+    let totalIncome: number = 0
+    let totalSavings: number = 0
+
+    if (expensesData && expensesData.length > 0) {
+        totalExpense = findTotalAmount(expensesData)
+    }
+
+
+
+
+
+
 
     const {currency} = useContext(SettingsContext);
 

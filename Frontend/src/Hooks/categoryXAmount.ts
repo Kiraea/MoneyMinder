@@ -14,8 +14,11 @@
 
 export const convertToCategoryXAmount = (dataForCategory: any, dataForData: any, selectedMonth: string, selectedYear: number) => {
 
-    let obj: {[key: string]: number} = {}
 
+    let obj: {[key: string]: number} = {}
+    if (dataForData.length === 0){
+        return obj
+    }
     dataForCategory.forEach(dataX => {
         obj[dataX.name] = 0
     });

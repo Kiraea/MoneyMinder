@@ -53,6 +53,11 @@ const queries = {
             DELETE FROM categories c 
             WHERE c.user_id = $1 AND c.id = $2 
             RETURNING *
+        `,
+        findUncategorizedCategory: `
+            SELECT c.id
+            FROM categories c
+            WHERE c.name = $1 AND c.user_id = $2
         `
     },
     expenses: {
@@ -77,7 +82,45 @@ const queries = {
             WHERE e.user_id = $1 AND e.id = $2 
             RETURNING *
         `,
+        batchUpdateExpensesCategoryQ:`
+            UPDATE expenses
+            SET category_id = $1
+            WHERE user_id = $2 AND category_id = $3
+            RETURNING *
+        `
     },
+    income: {
+        getIncomeQ: `
+            SELECT i.id, i.user_id, i.description, i.amount, TO_CHAR(i.date, 'Mon DD, YYYY') as date,
+            c.name AS category_name, c.id AS category_id
+            FROM income i JOIN categories c
+                            ON i.category_id = c.id
+            WHERE i.user_id = $1
+        `,
+        getIncomeByIdQ: `
+            SELECT *
+            FROM income i
+            WHERE i.user_id = $1 i.id = $2 
+        `,
+        createIncomeQ: `
+            INSERT INTO income (user_id, description, category_id, amount, date) VALUES ($1, $2, $3, $4, $5) RETURNING *
+        `,
+
+        deleteIncomeQ:`
+            DELETE FROM income i 
+            WHERE i.user_id = $1 AND i.id = $2 
+            RETURNING *
+        `,
+        batchUpdateIncomeCategoryQ:`
+            UPDATE income
+            SET category_id = $1
+            WHERE user_id = $2 AND category_id = $3
+            RETURNING *
+        `
+    },
+    savings: {
+
+    }
 
 
 

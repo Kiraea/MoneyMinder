@@ -5,6 +5,7 @@ import { SettingsContext } from '../Context/SettingsContext'
 import { useAddCategoryBasedOnType, useDeleteCategory, useGetCategoryBasedOnType } from '../Hooks/QueryHooks'
 import { IoMdCloseCircle } from 'react-icons/io'
 import { ICategoryType } from '../Types/categoryT'
+import { useQueryClient } from '@tanstack/react-query'
 export default function SettingsC(){
 
     const {currency, setCurrency} = useContext(SettingsContext)    
@@ -19,7 +20,7 @@ export default function SettingsC(){
     const { data: incomeCategoryData, isPending: incomeCategoryIsPending, isError: incomeCategoryIsError, error: incomeCategoryError } = useGetCategoryBasedOnType("income");
     const { data: savingsCategoryData, isPending: savingsCategoryIsPending, isError: savingsCategoryIsError, error: savingsCategoryError } = useGetCategoryBasedOnType("savings");
     
-
+    const queryClient = useQueryClient()
 
 
 
@@ -44,6 +45,10 @@ export default function SettingsC(){
 
     const handleDelete = async (categoryType: ICategoryType, categoryId: number, e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
+
+        queryClient.invalidateQueries({queryKey: ['expenses']})
+        queryClient.invalidateQueries({queryKey: ['income']})
+        queryClient.invalidateQueries({queryKey: ['savings']})
         useDeleteCategoryAsync({categoryId: categoryId, categoryType: categoryType})
     }
 
@@ -92,7 +97,12 @@ export default function SettingsC(){
 
                     <div className='flex flex-col'>
                         {!expensesCategoryIsError && expensesCategoryData.map((expenses)=> {
-                            return (<div className='bg-primary-bluegray2 inline'>{expenses.name} <button onClick={(e)=> {handleDelete(expenses.type, expenses.id, e)}}>-</button></div>)
+                            if (expenses.name === 'uncategorized'){
+                                return (<div className='bg-primary-bluegray2 inline'>{expenses.name}</div>)
+
+                            }else{
+                                return (<div className='bg-primary-bluegray2 inline'>{expenses.name} <button onClick={(e)=> {handleDelete(expenses.type, expenses.id, e)}}>-</button></div>)
+                            }
                         })}
                     </div>
             </div>

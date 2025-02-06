@@ -8,7 +8,7 @@ import Dashboard from './Components/Dashboard'
 import Expenses from './Components/Expenses'
 import './index.css'
 import Savings from './Components/Savings'
-import Incomes from './Components/Incomes'
+import Income from './Components/Income'
 import SettingsC from './Components/SettingsC'
 import { SettingsProvider } from './Context/SettingsContext'
 import { AuthContextProvider } from './Context/AuthContext'
@@ -20,6 +20,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: Infinity,
+      retryOnMount: false,
     },
   },
 })
@@ -38,7 +39,7 @@ createRoot(document.getElementById('root')!).render(
         <Route index element={<ProtectedRoute> <Dashboard/>   </ProtectedRoute>}/>
         <Route path="expenses" element={<ProtectedRoute> <Expenses/> </ProtectedRoute>}/>
         <Route path="savings" element={<ProtectedRoute> <Savings/> </ProtectedRoute>  }/>
-        <Route path="incomes" element={<ProtectedRoute> <Incomes/>  </ProtectedRoute>  }/>
+        <Route path="incomes" element={<ProtectedRoute> <Income/>  </ProtectedRoute>  }/>
         <Route path="settings" element={<ProtectedRoute> <SettingsC/>  </ProtectedRoute> }/>
       </Route>
      

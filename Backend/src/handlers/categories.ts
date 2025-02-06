@@ -87,28 +87,68 @@ export const createCategory = async (req: Request, res: Response) => {
 export const deleteCategory = async (req: Request, res: Response) => {
 
     const {categoryId} = req.params
+    const unCategorizedId = 1
     console.log('categoryId:', categoryId);  // Log to verify the value
     if (!categoryId){
         res.status(400).json({status:"fail", message:"insuficcient parameters",})
         return;
     }
 
+
     try{
-        let result = await pool.query(queries.categories.deleteCategoryQ, [req.user?.id ,categoryId])
+        console.log("1")
+        let result = await pool.query(queries.categories.findUncategorizedCategory, ["uncategorized", req.user?.id])
         if (result.rowCount! > 0){
-            res.status(200).json({status:"success", message: "succesfully deleted categories", data: result.rows})
-        }else{
-            res.status(200).json({status:"success", message: "success but did not delete "})
+            try{
+                console.log("2")
+                let result2 = await pool.query(queries.expenses.batchUpdateExpensesCategoryQ, [result.rows[0].id, req.user?.id, categoryId])
+                // TODO ADD FOR THE INCOME AND THE SAVINGS AS WELL
+                if (result2.rowCount! > 0) {
+
+
+
+
+
+                }
+
+                console.log("3")
+                try{
+                    let result = await pool.query(queries.categories.deleteCategoryQ, [req.user?.id ,categoryId])
+                    if (result.rowCount! > 0){
+                        console.log("4")
+                        res.status(200).json({status:"success", message: "succesfully deleted categories", data: result.rows})
+                    }else{
+                        res.status(200).json({status:"success", message: "success but did not delete "})
+                    }
+                }catch(e){
+                    console.log(e)
+                    res.status(500).json({status:"fail", message:"did not delete category due to internal error",})
+                }
+            
+            }catch(e){
+                console.log(e)
+            }
         }
     }catch(e){
         console.log(e)
-        res.status(500).json({status:"fail", message:"did not delete category due to internal error",})
     }
+
+
+
+
+
     
 }
 
 export const updateCategory = async (req: Request, res: Response) => {
 
+
+    
+}
+
+
+
+export const batchUpdateCategory = async  (req: Request, res: Response) => {
 
     
 }

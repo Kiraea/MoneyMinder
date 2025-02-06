@@ -4,7 +4,6 @@ import { axiosInstance } from "../axios"
 import { ICategoryType } from "../Types/categoryT"
 // Access thorugh sessions 
 
-
 export const useGetUserPublicDetails = () => {
     return useQuery({
         queryKey: ['userDetails'],
@@ -70,7 +69,26 @@ export const useGetExpenses= () => {
         })
     })
 }
-
+export const useGetIncome= () => {
+    return useQuery({
+        queryKey: ['income'],
+        queryFn: (async ()=> {
+            try{
+                let result = await axiosInstance.get(`${import.meta.env.VITE_BASE_URL_LINK}/api/income`)
+                if (result.status === 200){
+                    console.log("JUST FINISHED FETCHING")
+                    return result.data.data
+                }
+            }catch(e:unknown){
+                if (e instanceof AxiosError){
+                    console.log(e)
+                    throw e
+                }
+                throw e
+            }
+        })
+    })
+}
 
 
 
@@ -238,6 +256,99 @@ export const usePatchExpense = () => {
     return {usePatchExpenseAsync}
 }
 
+
+
+
+
+
+
+
+
+
+
+export const addIncome= async ({description, categoryId, amount , date}: {description: string, categoryId: number, amount: number, date: string } ) => {
+
+    try{
+        let result = await axiosInstance.post(`${import.meta.env.VITE_BASE_URL_LINK}/api/income/`, {description: description, categoryId: categoryId, amount:amount, date:date})
+        if (result.status === 200){
+            result.data.data
+        }
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+
+export const useAddIncome = ()=> {
+    const queryClient = useQueryClient()
+
+    const { mutateAsync: useAddIncomeAsync} = useMutation({
+        mutationFn: addIncome,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['income'] });
+        },
+      });
+    return {useAddIncomeAsync}
+}
+
+
+export const deleteIncome = async ({incomeId}: {incomeId: number} ) => {
+    try{
+        let result = await axiosInstance.delete(`${import.meta.env.VITE_BASE_URL_LINK}/api/income/${incomeId}`)
+        if(result.status === 200){
+            result.data.message
+            console.log(result.data.message)
+        }
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+// they haveto be in the same types for variables to work cause it depends on thhe params of the actual function
+
+
+export const useDeleteIncome = ()=> {
+    const queryClient = useQueryClient()
+    const { mutateAsync: useDeleteIncomeAsync} = useMutation({
+        mutationFn: deleteIncome,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['income'] });
+        },
+      });
+    return {useDeleteIncomeAsync}
+}
+
+
+const patchIncome = async ({incomeObj, incomeId}: {incomeObj: {[key: string]: any}, incomeId: number}) => {
+    try{
+        let result = await axiosInstance.patch(`${import.meta.env.VITE_BASE_URL_LINK}/api/income/${incomeId}`, incomeId) 
+        if(result.status == 200){
+            result.data.data
+        }
+    }catch(e: unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw(e)
+        }
+    }
+}
+
+export const usePatchIncome = () => {
+    const queryClient = useQueryClient()
+    const {mutateAsync: usePatchIncomeAsync} = useMutation({
+        mutationFn: patchIncome,
+        onSuccess: () =>  queryClient.invalidateQueries({queryKey: ["income"]})
+    })
+    return {usePatchIncomeAsync}
+}
 
 
 

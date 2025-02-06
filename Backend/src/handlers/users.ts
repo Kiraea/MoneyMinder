@@ -28,6 +28,12 @@ export const createUser = async (req: Request, res: Response) => {
 
     const addUserResult = await pool.query(queries.users.createUser, [username, hashedPassword, displayName])
 
+    try{
+        let result = await pool.query(queries.categories.createCategoryQ, [addUserResult.rows[0].id, "uncategorized", 'expenses'])
+    }catch(e){
+        console.log(e);
+    }
+
     if (addUserResult.rowCount! > 0){
         res.status(200).json({status: "success", message: "user created", data: addUserResult})
     }else{

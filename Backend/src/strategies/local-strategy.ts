@@ -12,6 +12,16 @@ const findOrCreateGoogleUser = async (googleID: string, displayName: string) => 
         let result = await pool.query(queries.users.checkGoogleUserIfExistsQ, [googleID])
         if (result.rowCount === 0){
             let result2 = await pool.query(queries.users.createGoogleUser, ["google", googleID])
+
+
+
+            try{
+                let result = await pool.query(queries.categories.createCategoryQ, [result2.rows[0].id, "uncategorized", 'expenses'])
+            }catch(e){
+                console.log(e)
+            }
+
+
             if (result2.rowCount! > 0){
                 return result2.rows[0]
             }
@@ -28,6 +38,13 @@ const findOrCreateGithubUser = async (githubID: string, displayName: string) => 
         let result = await pool.query(queries.users.checkGithubUserIfExistsQ, [githubID])
         if (result.rowCount === 0){
             let result2 = await pool.query(queries.users.createGithubUserQ, ["github", githubID])
+            try{
+                let result = await pool.query(queries.categories.createCategoryQ, [result2.rows[0].id, "uncategorized", 'exenses'])
+            }catch(e){
+                console.log(e)
+            }
+
+
             if (result2.rowCount! > 0){
                 return result2.rows[0]
             }
