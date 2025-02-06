@@ -30,6 +30,8 @@ export const createUser = async (req: Request, res: Response) => {
 
     try{
         let result = await pool.query(queries.categories.createCategoryQ, [addUserResult.rows[0].id, "uncategorized", 'expenses'])
+        let result4 = await pool.query(queries.categories.createCategoryQ, [addUserResult.rows[0].id, "uncategorized", 'income'])
+        let result5 = await pool.query(queries.categories.createCategoryQ, [addUserResult.rows[0].id, "uncategorized", 'savings'])
     }catch(e){
         console.log(e);
     }

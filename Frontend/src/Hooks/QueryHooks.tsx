@@ -89,6 +89,26 @@ export const useGetIncome= () => {
         })
     })
 }
+export const useGetSavings = () => {
+    return useQuery({
+        queryKey: ['savings'],
+        queryFn: (async ()=> {
+            try{
+                let result = await axiosInstance.get(`${import.meta.env.VITE_BASE_URL_LINK}/api/savings`)
+                if (result.status === 200){
+                    console.log("JUST FINISHED FETCHING")
+                    return result.data.data
+                }
+            }catch(e:unknown){
+                if (e instanceof AxiosError){
+                    console.log(e)
+                    throw e
+                }
+                throw e
+            }
+        })
+    })
+}
 
 
 
@@ -350,6 +370,98 @@ export const usePatchIncome = () => {
     return {usePatchIncomeAsync}
 }
 
+
+
+
+
+
+
+
+
+export const addSaving= async ({description, categoryId, amount , date}: {description: string, categoryId: number, amount: number, date: string } ) => {
+
+    try{
+        let result = await axiosInstance.post(`${import.meta.env.VITE_BASE_URL_LINK}/api/savings/`, {description: description, categoryId: categoryId, amount:amount, date:date})
+        if (result.status === 200){
+            result.data.data
+        }
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+
+
+export const useAddSaving = ()=> {
+    const queryClient = useQueryClient()
+
+    const { mutateAsync: useAddSavingAsync} = useMutation({
+        mutationFn: addSaving,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['savings'] });
+        },
+      });
+    return {useAddSavingAsync}
+}
+
+
+export const deleteSaving = async ({savingId}: {savingId: number} ) => {
+    try{
+        let result = await axiosInstance.delete(`${import.meta.env.VITE_BASE_URL_LINK}/api/saving/${savingId}`)
+        if(result.status === 200){
+            result.data.message
+            console.log(result.data.message)
+        }
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+// they haveto be in the same types for variables to work cause it depends on thhe params of the actual function
+
+
+export const useDeleteSaving= ()=> {
+    const queryClient = useQueryClient()
+    const { mutateAsync: useDeleteSavingAsync} = useMutation({
+        mutationFn: deleteSaving,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['saving'] });
+        },
+      });
+    return {useDeleteSavingAsync}
+}
+
+
+const patchSaving= async ({savingObj, savingId}: {savingObj: {[key: string]: any}, savingId: number}) => {
+    try{
+        let result = await axiosInstance.patch(`${import.meta.env.VITE_BASE_URL_LINK}/api/savings/${savingObj}`, savingId) 
+        if(result.status == 200){
+            result.data.data
+        }
+    }catch(e: unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw(e)
+        }
+    }
+}
+
+export const usePatchSaving= () => {
+    const queryClient = useQueryClient()
+    const {mutateAsync: usePatchSavingAsync} = useMutation({
+        mutationFn: patchSaving,
+        onSuccess: () =>  queryClient.invalidateQueries({queryKey: ["savings"]})
+    })
+    return {usePatchSavingAsync}
+}
 
 
 

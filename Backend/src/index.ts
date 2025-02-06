@@ -12,7 +12,8 @@ import authRoutes from './routes/auth'
 import userRoutes from './routes/users'
 import categoryRoutes from './routes/categories'
 import expensesRoutes from './routes/expenses'
-
+import incomeRoutes from './routes/income'
+import savingsRoutes from './routes/savings'
 dotenv.config();
 
 
@@ -84,6 +85,8 @@ app.use('/api/users', userRoutes)
 app.use('/api/auth',  authRoutes)
 app.use('/api/categories',  categoryRoutes)
 app.use('/api/expenses', expensesRoutes)
+app.use('/api/income', incomeRoutes)
+app.use('/api/savings', savingsRoutes)
 
 
 const run = async () => {
@@ -103,22 +106,18 @@ export {pool}
 
 const setupDatabase = async () => {
   await pool.query(`SET search_path TO '${process.env.DB_SCHEMA}';`)
-
-  /*
   await pool.query(`DROP TABLE IF EXISTS expenses;`);
   await pool.query(`DROP TABLE IF EXISTS savings;`);
+  await pool.query(`DROP TABLE IF EXISTS income;`);
   await pool.query(`DROP TABLE IF EXISTS categories;`);
   await pool.query(`DROP TABLE IF EXISTS users;`);
   await pool.query(`DROP TABLE IF EXISTS user_sessions;`);
-
   await pool.query(`DROP TYPE IF EXISTS category_enum CASCADE;`);
   await pool.query(`DROP TYPE IF EXISTS provider_enum CASCADE;`);
 
 
-
-  await pool.query(`CREATE TYPE provider_enum AS ENUM('facebook', 'google', 'github');`);
   await pool.query(`CREATE TYPE category_enum as ENUM('income', 'expenses', 'savings')`);
-  */
+  await pool.query(`CREATE TYPE provider_enum AS ENUM('facebook', 'google', 'github');`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -164,6 +163,16 @@ const setupDatabase = async () => {
       date DATE DEFAULT CURRENT_DATE
     );
     
+  `)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS income (
+      id SERIAL PRIMARY KEY,
+      user_id uuid REFERENCES users(id),
+      description VARCHAR(255) NOT NULL,
+      category_id int REFERENCES categories(id),
+      amount INT NOT NULL,
+      date DATE DEFAULT CURRENT_DATE
+    ); 
   `)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS savings (

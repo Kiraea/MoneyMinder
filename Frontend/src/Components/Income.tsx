@@ -5,12 +5,15 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { FaExchangeAlt } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { SettingsContext } from "../Context/SettingsContext";
-import { useAddCategoryBasedOnType, useAddIncome, useDeleteIncome, useGetCategoryBasedOnType, useGetIncome, usePatchExpense, usePatchIncome } from "../Hooks/QueryHooks";
+import { useAddCategoryBasedOnType, useAddIncome, useDeleteIncome, useGetCategoryBasedOnType, useGetIncome, usePatchIncome } from "../Hooks/QueryHooks";
 import { sortByOptions } from "../Hooks/Sort";
 import { formatDate, reverseFormatDate } from "../Hooks/LongDateToISO";
 //import { ExpensePieChart } from "./Expenses/ExpensePieChart";
 //import { ExpenseLineChart } from "./Expenses/ExpenseLineChart";
 //import { ExpenseAddDialog } from "./Expenses/ExpenseAddDialog";
+import { IncomeAddDialog } from "./Income/IncomeAddDialog";
+import { IncomePieChart } from "./Income/IncomePieChart";
+import { IncomeLineChart } from "./Income/IncomeLineChart";
 const yearList = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050];
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const fullMonthList = [
@@ -27,7 +30,7 @@ export default function Income(){
     const {useDeleteIncomeAsync} = useDeleteIncome() 
     const {data: categoryData, isPending: categoryIsPending, isError:  categoryIsError, error: categoryError}= useGetCategoryBasedOnType("income")
     const {data: incomeData = [] , isPending: incomeIsPending , isError:  incomeIsError , error: incomeError} = useGetIncome();
-
+    console.log(incomeData);
     const {currency} = useContext(SettingsContext);
     const [dropdownIsVisible, setDropdownIsVisible] = useState(false);
     const [dropdownPosition, setDropDownPosition ] = useState({top:0, left:0})
@@ -46,7 +49,7 @@ export default function Income(){
         }           
     )
 
-    const [modifiedIncome, setModifiedIncome] = useState<Record<string, any>>({ // for comparing to the selected expense cause i will use "PATCH"
+    const [modifiedIncome, setModifiedIncome] = useState<Record<string, any>>({ // for comparing to the selected income cause i will use "PATCH"
             description: "",
             category_id: 0,
             amount: 0,
@@ -129,7 +132,7 @@ export default function Income(){
 
     } 
 
-    const handleDeleteExpense = async () => {
+    const handleDeleteIncome= async () => {
         console.log("handle it ");
         setDropdownIsVisible(false);
         useDeleteIncomeAsync({incomeId:selectedIncomeId})
@@ -154,6 +157,7 @@ export default function Income(){
             
 
 
+            <IncomeAddDialog addIncomeDialog={addIncomeDialog} />
 
             <dialog ref={updateIncomeDialog} className="absolute m-auto shadow-gray shadow-lg rounded-lg">
                 <div className="flex flex-col p-5 gap-2 bg-primary-purple3 text-white ">
@@ -178,6 +182,8 @@ export default function Income(){
 
             
             <div className="flex justify-between gap-5">
+                <IncomeLineChart/>
+                <IncomePieChart/>
             </div>
 
 
@@ -232,7 +238,7 @@ export default function Income(){
             {dropdownIsVisible &&
             <div className="absolute  z-20 flex flex-col bg-primary-bluegray2  gap-1 text-white text-sm rounded-md" style={{top: dropdownPosition.top-15, left:dropdownPosition.left-100}}>
                 <button className="px-5 py-0  hover:bg-primary-bluegray  font-medium  hover:text-white " onClick={openUpdateDialogBox}>Update</button>
-                <button className="px-5 py-0  hover:bg-primary-bluegray font-medium hover:text-white" onClick={handleDeleteExpense}>Delete</button>
+                <button className="px-5 py-0  hover:bg-primary-bluegray font-medium hover:text-white" onClick={handleDeleteIncome}>Delete</button>
             </div>
             }
 

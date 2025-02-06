@@ -6,13 +6,13 @@ const router = express()
 
 router.get('/', getIncome)
 
-router.get('/:expenseId', getIncomeById)
+router.get('/:incomeId', getIncomeById)
 
 router.post('/', createIncome)
 
-router.patch('/:expenseId', patchIncome)
+router.patch('/:incomeId', patchIncome)
 
-router.delete('/:expenseId', deleteIncome)
+router.delete('/:incomeId', deleteIncome)
 
 
 export default router

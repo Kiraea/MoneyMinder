@@ -119,7 +119,33 @@ const queries = {
         `
     },
     savings: {
+        getSavingsQ: `
+            SELECT s.id, s.user_id, s.description, s.amount, TO_CHAR(s.date, 'Mon DD, YYYY') as date,
+            c.name AS category_name, c.id AS category_id
+            FROM savings s JOIN categories c
+                            ON s.category_id = c.id
+            WHERE s.user_id = $1
+        `,
+        getSavingsByIdQ: `
+            SELECT *
+            FROM savings s
+            WHERE s.user_id = $1 s.id = $2 
+        `,
+        createSavingQ: `
+            INSERT INTO savings (user_id, description, category_id, amount, date) VALUES ($1, $2, $3, $4, $5) RETURNING *
+        `,
 
+        deleteSavingQ:`
+            DELETE FROM savings s 
+            WHERE s.user_id = $1 AND s.id = $2 
+            RETURNING *
+        `,
+        batchUpdateSavingsCategoryQ:`
+            UPDATE savings 
+            SET category_id = $1
+            WHERE user_id = $2 AND category_id = $3
+            RETURNING *
+        `
     }
 
 

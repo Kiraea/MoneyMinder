@@ -11,8 +11,10 @@ type ExpenseAddDialogProps = {
 
 export const ExpenseAddDialog  = ({addExpenseDialog}: ExpenseAddDialogProps) => {
 
-    
+
     const {data: categoryData, isPending: categoryIsPending, isError:  categoryIsError, error: categoryError}= useGetCategoryBasedOnType("expenses")
+
+    const [inputError, setInputError] = useState<string[]>([])
 
     const {useAddExpenseAsync} = useAddExpense()    
 
@@ -37,6 +39,7 @@ export const ExpenseAddDialog  = ({addExpenseDialog}: ExpenseAddDialogProps) => 
     }
 
     const submitAddExpense = async () => {
+
 
         if (addExpenseInputs.amount && addExpenseInputs.category && addExpenseInputs.date && addExpenseInputs.description){
             useAddExpenseAsync({description: addExpenseInputs.description, categoryId: addExpenseInputs.category, amount: addExpenseInputs.amount, date: addExpenseInputs.date })
