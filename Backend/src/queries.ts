@@ -146,6 +146,40 @@ const queries = {
             WHERE user_id = $2 AND category_id = $3
             RETURNING *
         `
+    },
+    automatedIncome: {
+        createAutomatedIncomeQ: `
+             INSERT INTO automated_income (user_id, description, category_id, amount, date, schedule_frequency) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
+        `,
+        getAutomatedIncomeQ: `
+            SELECT i.id, i.user_id, i.description, i.amount, i.schedule_frequency, TO_CHAR(i.date, 'Mon DD, YYYY') as date,
+            c.name AS category_name, c.id AS category_id 
+            FROM automated_income i JOIN categories c
+                            ON i.category_id = c.id
+            WHERE i.user_id = $1
+        `,
+        getAutomatedIncomeAllQ: `
+            SELECT i.id, i.user_id, i.description, i.amount, i.schedule_frequency, TO_CHAR(i.date, 'Mon DD, YYYY') as date,
+            c.name AS category_name, c.id AS category_id 
+            FROM automated_income i JOIN categories c
+                                    ON i.category_id = c.id
+        `,
+        getAutomatedIncomeByIdQ: `
+            SELECT *
+            FROM automated_income i
+            WHERE i.user_id = $1 i.id = $2 
+        `,
+        deleteAutomatedIncomeQ:`
+            DELETE FROM automated_income i 
+            WHERE i.user_id = $1 AND i.id = $2 
+            RETURNING *
+        `,
+        batchUpdateAutomatedIncomeCategoryQ:`
+            UPDATE automated_income 
+            SET category_id = $1
+            WHERE user_id = $2 AND category_id = $3
+            RETURNING *
+        `
     }
 
 

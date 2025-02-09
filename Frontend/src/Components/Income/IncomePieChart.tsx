@@ -40,12 +40,12 @@ export const IncomePieChart= () => {
             <div className="flex gap-5">
                 <select className="bg-primary-lightpurple rounded-lg" value={pieSelectMonth} onChange={(e)=> {setPieSelectMonth(e.target.value)}}>
                     {monthList.map((month, index)=> {
-                        return (<option value={month}>{fullMonthList[index]}</option>)
+                        return (<option key={month} value={month}>{fullMonthList[index]}</option>)
                     })}
                 </select>
                 <select className="bg-primary-lightpurple rounded-lg" value={pieSelectYear} onChange={(e)=> {setPieSelectYear(Number(e.target.value))}}>
                     {yearList.map((year, index)=> {
-                        return (<option value={year}>{year}</option>)
+                        return (<option key={year} value={year}>{year}</option>)
                     })}
                 </select>
             </div>

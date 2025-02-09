@@ -14,6 +14,9 @@ import categoryRoutes from './routes/categories'
 import expensesRoutes from './routes/expenses'
 import incomeRoutes from './routes/income'
 import savingsRoutes from './routes/savings'
+import automatedIncomeRoutes from './routes/automatedIncome'
+import cron from 'node-cron'
+import { queries } from './queries';
 dotenv.config();
 
 
@@ -87,11 +90,83 @@ app.use('/api/categories',  categoryRoutes)
 app.use('/api/expenses', expensesRoutes)
 app.use('/api/income', incomeRoutes)
 app.use('/api/savings', savingsRoutes)
+app.use('/api/automatedIncome', automatedIncomeRoutes)
 
+
+const runCronScheduler = async () => {
+  cron.schedule('*/10 * * * * *', async () => {
+    console.log("KOKOKOKO");
+    cronFunctions(); 
+  })
+}
+
+
+const cronFunctions =  async () => {
+
+  let shouldInsert = false
+  try{
+    let {rows: arrAutomatedIncome, rowCount: rowCount} = await pool.query(queries.automatedIncome.getAutomatedIncomeAllQ)
+    if (rowCount! === 0){
+      return
+    }
+    for (let automatedIncome of arrAutomatedIncome){
+
+      console.log("this happens")
+      let startDate = new Date(automatedIncome.date); //date
+      let  currentDate = new Date(); //date
+      let diffInMilliseconds = currentDate.getTime() - startDate.getTime(); //num
+
+      const diffInDays = Math.floor(Math.abs(diffInMilliseconds / (1000 * 60 * 60 * 24)))
+      console.log("startDate:", startDate, "currentDate:", currentDate, "diffInMiliseconds:", diffInMilliseconds, "diffInDays", diffInDays)
+
+      const newDate = new Date(currentDate).getDate()
+      if (automatedIncome.schedule_frequency === 'daily'){
+        if (diffInDays >= 0 ){
+          shouldInsert = true
+        }
+      }
+      if (automatedIncome.schedule_frequency === 'weekly'){
+        if (diffInDays % 7 === 0){
+          shouldInsert = true
+        }
+      }
+      if (automatedIncome.schedule_frequency === 'monthly'){
+        if (diffInDays > 0 && startDate.getDate() === currentDate.getDate()){
+          shouldInsert = true
+        }
+      }
+      
+
+      if (shouldInsert){
+        console.log("insert statement");
+        const {description, category_id, amount, date, user_id} = automatedIncome 
+        try{
+            let result = await pool.query(queries.income.createIncomeQ, [user_id, description, category_id, amount, date])
+        }catch(e){
+            console.log(e)
+        }
+      }
+
+    }
+  }catch(e){
+    console.log(e)
+  }
+}
+/*
+id SERIAL PRIMARY KEY,
+user_id uuid REFERENCES users(id),
+description VARCHAR(255) NOT NULL,
+category_id int REFERENCES categories(id),
+amount INT NOT NULL,
+date DATE NOT NULL,
+schedule_frequency schedule_enum
+*/
 
 const run = async () => {
   try {
     await setupDatabase(); // Wait for DB setup first
+
+    await runCronScheduler()
     app.listen(process.env.PORT, () => { // Start server AFTER setup
       console.log(`Server listening on port ${process.env.PORT}`);
       console.log();
@@ -106,18 +181,25 @@ export {pool}
 
 const setupDatabase = async () => {
   await pool.query(`SET search_path TO '${process.env.DB_SCHEMA}';`)
-  await pool.query(`DROP TABLE IF EXISTS expenses;`);
-  await pool.query(`DROP TABLE IF EXISTS savings;`);
-  await pool.query(`DROP TABLE IF EXISTS income;`);
-  await pool.query(`DROP TABLE IF EXISTS categories;`);
-  await pool.query(`DROP TABLE IF EXISTS users;`);
-  await pool.query(`DROP TABLE IF EXISTS user_sessions;`);
+  
+  await pool.query(`DROP TABLE IF EXISTS automated_income CASCADE;`);
+  await pool.query(`DROP TABLE IF EXISTS expenses CASCADE;`);
+  await pool.query(`DROP TABLE IF EXISTS savings CASCADE;`);
+  await pool.query(`DROP TABLE IF EXISTS income CASCADE;`);
+  await pool.query(`DROP TABLE IF EXISTS categories CASCADE;`);
+  await pool.query(`DROP TABLE IF EXISTS users CASCADE;`);
+  await pool.query(`DROP TABLE IF EXISTS user_sessions CASCADE;`);
+
   await pool.query(`DROP TYPE IF EXISTS category_enum CASCADE;`);
   await pool.query(`DROP TYPE IF EXISTS provider_enum CASCADE;`);
-
-
+  await pool.query(`DROP TYPE IF EXISTS schedule_enum CASCADE;`);
+  
+  
+  await pool.query(`CREATE TYPE schedule_enum as ENUM('daily', 'monthly', 'weekly', 'yearly');`);
   await pool.query(`CREATE TYPE category_enum as ENUM('income', 'expenses', 'savings')`);
   await pool.query(`CREATE TYPE provider_enum AS ENUM('facebook', 'google', 'github');`);
+  
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -185,7 +267,20 @@ const setupDatabase = async () => {
     ); 
   `)
 
-  
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS automated_income(
+      id SERIAL PRIMARY KEY,
+      user_id uuid REFERENCES users(id),
+      description VARCHAR(255) NOT NULL,
+      category_id int REFERENCES categories(id),
+      amount INT NOT NULL,
+      date DATE DEFAULT CURRENT_DATE,
+      schedule_frequency schedule_enum
+
+    ); 
+  `)
+
 }
 
 

@@ -14,6 +14,7 @@ import { formatDate, reverseFormatDate } from "../Hooks/LongDateToISO";
 import { IncomeAddDialog } from "./Income/IncomeAddDialog";
 import { IncomePieChart } from "./Income/IncomePieChart";
 import { IncomeLineChart } from "./Income/IncomeLineChart";
+import { IncomeAutomateAddDialog } from "./Income/IncomeAutomateAddDialog";
 const yearList = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049, 2050];
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const fullMonthList = [
@@ -35,6 +36,7 @@ export default function Income(){
     const [dropdownIsVisible, setDropdownIsVisible] = useState(false);
     const [dropdownPosition, setDropDownPosition ] = useState({top:0, left:0})
     const addIncomeDialog = useRef<HTMLDialogElement | null>(null)
+    const addAutomateIncomeDialog = useRef<HTMLDialogElement | null>(null)
     const updateIncomeDialog = useRef<HTMLDialogElement | null>(null)
     const [selectedIncomeId, setSelectedIncomeId] = useState(-1) // for delete
 
@@ -76,6 +78,9 @@ export default function Income(){
 
     const openDialogBox = () => {
         addIncomeDialog.current?.showModal()
+    }
+    const openAutomateIncomeDialogBox = () => {
+        addAutomateIncomeDialog.current?.showModal()
     }
 
 
@@ -153,11 +158,11 @@ export default function Income(){
     return (
         <div className="bg-primary-gray w-full flex flex-col p-5 gap-2 ">
 
-
             
 
 
             <IncomeAddDialog addIncomeDialog={addIncomeDialog} />
+            <IncomeAutomateAddDialog addAutomatedIncomeDialog={addAutomateIncomeDialog} />
 
             <dialog ref={updateIncomeDialog} className="absolute m-auto shadow-gray shadow-lg rounded-lg">
                 <div className="flex flex-col p-5 gap-2 bg-primary-purple3 text-white ">
@@ -186,9 +191,9 @@ export default function Income(){
                 <IncomePieChart/>
             </div>
 
-
-
             <div className="flex justify-between">
+
+                <button onClick={openAutomateIncomeDialogBox} className="font-semibold p-2 border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" >Add Automated Income </button>
                 <button className="font-semibold p-2 border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={openDialogBox}>Add Income </button>
                 <div className="flex gap-5">
                     <select className="bg-primary-bluegray rounded-lg text-white text-xl"  onChange={(e)=> setSort(e.target.value)} value={sort}>

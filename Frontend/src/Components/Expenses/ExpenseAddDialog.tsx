@@ -58,7 +58,7 @@ export const ExpenseAddDialog  = ({addExpenseDialog}: ExpenseAddDialogProps) => 
 
             <select onChange={handleAddExpenseInput} className="text-black rounded-xl p-2 text-xs" name='category' value={addExpenseInputs.category} >
                 {categoryData.map((option: any)=> {
-                    return (<option className="text-black" value={option.id}>{option.name}</option>)
+                    return (<option  key={option.id} className="text-black" value={option.id}>{option.name}</option>)
                 })}
             </select>                    
 

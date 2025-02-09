@@ -76,8 +76,8 @@ export default function SettingsC(){
 
 
 
-            <div>
-                Currency used: 
+            <div className='flex gap-2'>
+                <span>Currency Used:</span>  
                 <select className="text-black" value={currency || "$"} onChange={changeCurrency}>
                     <option value="$">$</option>
                     <option value="€">€</option>
@@ -87,49 +87,70 @@ export default function SettingsC(){
                 </select>
             </div>
 
-            <div>Manage Categories</div>
+            <div className='font-bold text-4xl'>Manage Categories</div>
 
-            <div className='flex flex-col bg-primary-bluegray gap-5 '>
-                <span className='font-bold text-xl'>Expenses</span>
-                    <div>
-                        <button className="font-semibold p-2  border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={()=> openCategoryDialogBox("expenses")}>Add Category</button>
-                    </div>
+            <div className='flex flex-col bg-primary-bluegray '>
+                <div className='flex  items-center justify-between p-3'>
+                    <span className='font-bold text-xl'>Expenses</span>
+                        <div>
+                            <button className="font-semibold p-2  border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={()=> openCategoryDialogBox("expenses")}>Add Category</button>
+                        </div>
+                </div>
 
-                    <div className='flex flex-col'>
-                        {!expensesCategoryIsError && expensesCategoryData.map((expenses)=> {
-                            if (expenses.name === 'uncategorized'){
-                                return (<div className='bg-primary-bluegray2 inline'>{expenses.name}</div>)
 
-                            }else{
-                                return (<div className='bg-primary-bluegray2 inline'>{expenses.name} <button onClick={(e)=> {handleDelete(expenses.type, expenses.id, e)}}>-</button></div>)
-                            }
-                        })}
-                    </div>
+                <div className='flex flex-col p-3'>
+                    {!expensesCategoryIsError && expensesCategoryData.map((expenses)=> {
+                        if (expenses.name === 'uncategorized'){
+                            return (<div className='bg-primary-bluegray2 inline'>● {expenses.name}</div>)
+
+                        }else{
+                            return (<div className='bg-primary-bluegray2 inline'>● {expenses.name} <button onClick={(e)=> {handleDelete(expenses.type, expenses.id, e)}}>-</button></div>)
+                        }
+                    })}
+                </div>
             </div>
-            <div className='flex flex-col bg-primary-bluegray gap-5 '>
-                <span className='font-bold text-xl'>Income</span>
-                    <div>
-                        <button className="font-semibold p-2  border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={()=> openCategoryDialogBox("income")}>Add Category</button>
-                    </div>
+            <div className='flex flex-col bg-primary-bluegray '>
+                <div className='flex  items-center justify-between p-3'>
+                    <span className='font-bold text-xl'>Income</span>
+                        <div>
+                            <button className="font-semibold p-2  border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={()=> openCategoryDialogBox("income")}>Add Category</button>
+                        </div>
+                </div>
 
-                    <div className='flex flex-col'>
-                        {!incomeCategoryIsError && incomeCategoryData.map((income)=> {
-                            return (<div className='bg-primary-bluegray2 inline'>{income.name} <button onClick={(e)=> {handleDelete(income.type, income.id, e)}}>-</button></div>)
-                        })}
-                    </div>
-            </div>
-            <div className='flex flex-col bg-primary-bluegray gap-5 '>
-                <span className='font-bold text-xl'>Savings</span>
-                    <div>
-                        <button className="font-semibold p-2  border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={()=> openCategoryDialogBox("savings")}>Add Category</button>
-                    </div>
 
-                    <div className='flex flex-col'>
-                        {!savingsCategoryIsError && savingsCategoryData.map((savings)=> {
-                            return (<div className='bg-primary-bluegray2 inline'>{savings.name} <button onClick={(e)=> {handleDelete(savings.type, savings.id, e)}}>-</button></div>)
-                        })}
-                    </div>
+                <div className='flex flex-col p-3'>
+                    {!incomeCategoryIsError && incomeCategoryData.map((income)=> {
+                        if (income.name === 'uncategorized'){
+                            return (<div className='bg-primary-bluegray2 inline'>● {income.name}</div>)
+
+                        }else{
+                            return (<div className='bg-primary-bluegray2 inline'>● {income.name} <button onClick={(e)=> {handleDelete(income.type, income.id, e)}}>-</button></div>)
+                        }
+                    })}
+                </div>
             </div>
+
+            <div className='flex flex-col bg-primary-bluegray '>
+                <div className='flex  items-center justify-between p-3'>
+                    <span className='font-bold text-xl'>Savings</span>
+                        <div>
+                            <button className="font-semibold p-2  border-[1px] rounded-full bg-primary-lightpurple border-primary-bluegray2 hover:bg-primary-bluegray2 hover:text-white  text-black" onClick={()=> openCategoryDialogBox("savings")}>Add Category</button>
+                        </div>
+                </div>
+
+
+                <div className='flex flex-col p-3'>
+                    {!savingsCategoryIsError && savingsCategoryData.map((savings)=> {
+                        if (savings.name === 'uncategorized'){
+                            return (<div className='bg-primary-bluegray2 inline'>● {savings.name}</div>)
+
+                        }else{
+                            return (<div className='bg-primary-bluegray2 inline'>● {savings.name} <button onClick={(e)=> {handleDelete(savings.type, savings.id, e)}}>-</button></div>)
+                        }
+                    })}
+                </div>
+            </div>
+
 
         </div>
     )

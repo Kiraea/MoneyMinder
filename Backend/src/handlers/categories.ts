@@ -102,7 +102,10 @@ export const deleteCategory = async (req: Request, res: Response) => {
             try{
                 console.log("2")
                 let result2 = await pool.query(queries.expenses.batchUpdateExpensesCategoryQ, [result.rows[0].id, req.user?.id, categoryId])
-                // TODO ADD FOR THE INCOME AND THE SAVINGS AS WELL
+                let result3 = await pool.query(queries.income.batchUpdateIncomeCategoryQ, [result.rows[0].id, req.user?.id, categoryId])
+                let result4 = await pool.query(queries.savings.batchUpdateSavingsCategoryQ, [result.rows[0].id, req.user?.id, categoryId])
+                let result5 = await pool.query(queries.automatedIncome.batchUpdateAutomatedIncomeCategoryQ, [result.rows[0].id, req.user?.id, categoryId])
+                // TODO ADD FOR THE INCOME AND THE SAVINGS AS WELL1
                 if (result2.rowCount! > 0) {
 
 

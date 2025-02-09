@@ -55,7 +55,7 @@ export const SavingAddDialog = ({addSavingDialog}: SavingAddDialogProps) => {
 
             <select onChange={handleAddSavingInput} className="text-black rounded-xl p-2 text-xs" name='category' value={addSavingInputs.category} >
                 {categoryData.map((option: any)=> {
-                    return (<option className="text-black" value={option.id}>{option.name}</option>)
+                    return (<option  key={option.id} className="text-black" value={option.id}>{option.name}</option>)
                 })}
             </select>                    
 

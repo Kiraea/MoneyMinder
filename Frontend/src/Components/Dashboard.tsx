@@ -6,8 +6,14 @@ import { SettingsContext } from "../Context/SettingsContext"
 import { useContext } from "react"
 
 
-import { useGetExpenses } from "../Hooks/QueryHooks"
-
+import { useGetExpenses, useGetIncome, useGetSavings } from "../Hooks/QueryHooks"
+import { ExpensePieChart } from "./Expenses/ExpensePieChart"
+import { ExpenseLineChart } from "./Expenses/ExpenseLineChart"
+import { IncomePieChart } from "./Income/IncomePieChart"
+import { IncomeLineChart } from "./Income/IncomeLineChart"
+import { SavingLineChart } from "./Savings/SavingLineChart"
+import { SavingPieChart } from "./Savings/SavingPieChart"
+import { LineChartComplete } from "./CombinationElements/LineChartComplete"
 const columnValues =  ["a", "b", "c"]
 const dataValues = [
     {
@@ -74,6 +80,9 @@ function Dashboard(){
 
 
     const {data: expensesData = [], isPending: expensesIsPending, error: expensesError, isError: expenseIsError} = useGetExpenses()
+    const {data: incomeData = [] , isPending: incomeIsPending , isError:  incomeIsError , error: incomeError} = useGetIncome();
+    const {data: savingsData = [] , isPending: savingsIsPending, isError:  savingsIsError, error: savingsError} = useGetSavings();
+
 
     let totalExpense: number = 0
     let totalIncome: number = 0
@@ -81,6 +90,12 @@ function Dashboard(){
 
     if (expensesData && expensesData.length > 0) {
         totalExpense = findTotalAmount(expensesData)
+    }
+    if (incomeData && incomeData.length > 0) {
+        totalIncome = findTotalAmount(incomeData)
+    }
+    if (savingsData&& savingsData.length > 0) {
+        totalSavings = findTotalAmount(savingsData)
     }
 
 
@@ -95,42 +110,20 @@ function Dashboard(){
         <div className="h-full bg-primary-gray w-full flex flex-col  p-5 gap-8">
             
             <div className="grid grid-cols-3 gap-8">
-                <StatCompnentListL currency={currency}  amount={15232} color={"green"} description="Current Balance"/>
-                <StatCompnentListL currency={currency} amount={15232} color={"red"} description="Expenses"/>
-                <StatCompnentListL currency={currency} amount={15232} color={"yellow"} description="Income"/>
+                <StatCompnentListL currency={currency}  amount={totalExpense} color={"green"} description="Current Balance"/>
+                <StatCompnentListL currency={currency} amount={totalIncome} color={"red"} description="Expenses"/>
+                <StatCompnentListL currency={currency} amount={totalSavings} color={"yellow"} description="Income"/>
 
-                <PieChart title={"Expenses Distribution"} labelNames={["Transportation", "Food"]} dataValues={[25000, 30000]}></PieChart>
-                <PieChart title={"Income Distribution"} labelNames={["Transportation", "Food"]} dataValues={[25000, 30000]}></PieChart>
+                <ExpensePieChart/>
+                <IncomePieChart/>
+                <SavingPieChart/>
+
+
+
             </div>
-            <table className=" rounded-md">
-                <thead>
-                    <tr className="text-left font-medium bg-primary-bluegray text-white p-5">
-                        <th className="px-5">Title</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    {dataValues.map((value, index)=> {
-                        return (
-                        <tr key={index} className={` text-sm odd:bg-primary-lightpurple4 `}>
-                            <td className="">{value.title}</td>
-                            <td  className=" ">{value.category}</td>
-                            <td className="">{currency}{value.amount}</td>
-                            <td className="">{value.date}</td>
-                            
-
-                        </tr>
-                        )
-
-                    })}
-                    <tr>
-                    </tr>
-
-                </tbody>
-            </table>
+            <div>
+                <LineChartComplete/>
+            </div>
 
         </div>
     )

@@ -86,8 +86,10 @@ export const useGetIncome= () => {
                 }
                 throw e
             }
-        })
+        }),
+
     })
+
 }
 export const useGetSavings = () => {
     return useQuery({
@@ -171,6 +173,10 @@ export const useDeleteCategory= ()=> {
 
           // Invalidate to refetch and sync with server
           queryClient.invalidateQueries({ queryKey: ['categories', variables.categoryType] });
+          queryClient.invalidateQueries({ queryKey: ['expenses'] });
+          queryClient.invalidateQueries({ queryKey: ['income'] });
+          queryClient.invalidateQueries({ queryKey: ['savings'] });
+          queryClient.invalidateQueries({ queryKey: ['automatedIncome'] });
         },
       });
     return {useDeleteCategoryAsync}
@@ -469,3 +475,110 @@ export const usePatchSaving= () => {
 
 
 
+export const addAutomatedIncome = async ({description, categoryId, amount , date, scheduleFrequency}: {description: string, categoryId: number, amount: number, date: string, scheduleFrequency: string } ) => {
+    console.log(scheduleFrequency, "SCHEDULE FREQ ADD AUTOMATED");
+    try{
+        let result = await axiosInstance.post(`${import.meta.env.VITE_BASE_URL_LINK}/api/automatedIncome/`, {description: description, categoryId: categoryId, amount:amount, date:date, scheduleFrequency: scheduleFrequency})
+        if (result.status === 200){
+            result.data.data
+        }
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+
+
+export const useAddAutomatedIncome = ()=> {
+    const queryClient = useQueryClient()
+
+    const { mutateAsync: useAddAutomatedIncomeAsync} = useMutation({
+        mutationFn: addAutomatedIncome,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['automatedIncome'] });
+        },
+      });
+    return {useAddAutomatedIncomeAsync}
+}
+
+
+export const deleteAutomatedIncome = async ({automatedIncomeId}: {automatedIncomeId: number} ) => {
+    try{
+        let result = await axiosInstance.delete(`${import.meta.env.VITE_BASE_URL_LINK}/api/automatedIncome/${automatedIncomeId}`)
+        if(result.status === 200){
+            result.data.message
+            console.log(result.data.message)
+        }
+    }catch(e:unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw e
+        }
+        throw e
+    }
+}
+
+// they haveto be in the same types for variables to work cause it depends on thhe params of the actual function
+
+
+export const useDeleteAutomatedIncome = ()=> {
+    const queryClient = useQueryClient()
+    const { mutateAsync: useDeleteAutomatedIncomeAsync } = useMutation({
+        mutationFn: deleteAutomatedIncome,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['automatedIncome'] });
+        },
+      });
+    return {useDeleteAutomatedIncomeAsync}
+}
+
+export const useGetAutomatedIncome = () => {
+    return useQuery({
+        queryKey: ['automatedIncome'],
+        queryFn: (async ()=> {
+            try{
+                let result = await axiosInstance.get(`${import.meta.env.VITE_BASE_URL_LINK}/api/automatedIncome`)
+                if (result.status === 200){
+                    console.log("JUST FINISHED FETCHING")
+                    return result.data.data
+                }
+            }catch(e:unknown){
+                if (e instanceof AxiosError){
+                    console.log(e)
+                    throw e
+                }
+                throw e
+            }
+        }),
+    })
+}
+
+
+
+const patchAutomatedIncome = async ({automatedIncomeObj, automatedIncomeId}: {automatedIncomeObj: {[key: string]: any}, automatedIncomeId: number}) => {
+    try{
+        let result = await axiosInstance.patch(`${import.meta.env.VITE_BASE_URL_LINK}/api/automatedIncome/${automatedIncomeObj}`, automatedIncomeId) 
+        if(result.status == 200){
+            result.data.data
+        }
+    }catch(e: unknown){
+        if (e instanceof AxiosError){
+            console.log(e)
+            throw(e)
+        }
+    }
+}
+
+
+export const usePatchAutomatedIncome = () => {
+    const queryClient = useQueryClient()
+    const {mutateAsync: usePatchAutomatedIncomeAsync } = useMutation({
+        mutationFn: patchSaving,
+        onSuccess: () =>  queryClient.invalidateQueries({queryKey: ["automatedIncome"]})
+    })
+    return {usePatchAutomatedIncomeAsync}
+}
