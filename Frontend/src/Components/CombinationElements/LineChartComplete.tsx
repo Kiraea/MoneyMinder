@@ -1,6 +1,5 @@
 import { convertToPerYear } from "../../Hooks/monthMoneyPerYear";
 import { useGetExpenses, useGetIncome,useGetSavings } from "../../Hooks/QueryHooks";
-import { useGetCategoryBasedOnType } from "../../Hooks/QueryHooks";
 import { IYear } from "../../Types/categoryT";
 import { useState } from "react";
 import LineChartAll from "./LineChartAll";
