@@ -10,6 +10,8 @@ React | Typescript | NodeJS | Postgres.
 
 <h1> Demo Images </h1>
 <img width="1280" alt="image" src="https://github.com/user-attachments/assets/6bd8b966-5aeb-4e2f-8ccc-1e6fb91bcc90" />
+<img width="1280" alt="image" src="https://github.com/user-attachments/assets/70bf1bbe-ad33-4275-8693-644e5baa4faf" />
+
 <img width="1280" alt="image" src="https://github.com/user-attachments/assets/ce7ae046-cace-4ac2-8364-13c1534f2f39" />
 <img width="1280" alt="image" src="https://github.com/user-attachments/assets/e2b98b75-530c-4aa0-a5a8-7b6ab877383d" />
 <img width="1280" alt="image" src="https://github.com/user-attachments/assets/9ba9a664-23fe-4cd1-9b07-8da7e073290e" />
